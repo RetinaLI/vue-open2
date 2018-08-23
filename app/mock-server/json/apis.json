@@ -1,0 +1,49 @@
+{
+  "list": {
+    "total": 71,
+    "list": [
+      {
+        "id": 1,
+        "name": "1车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0,
+        "status": "未开通"
+      },
+      {
+        "id": 2,
+        "name": "2车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0.01,
+        "status": "已开通"
+      },
+      {
+        "id": 3,
+        "name": "3车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0.01,
+        "status": "开通中"
+      },
+      {
+        "id": 4,
+        "name": "4车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0,
+        "status": "未开通"
+      },
+      {
+        "id": 5,
+        "name": "5车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0.01,
+        "status": "未开通"
+      },
+      {
+        "id": 6,
+        "name": "6车辆当前位置",
+        "abstract": "abcdefg",
+        "price": 0.01,
+        "status": "未开通"
+      }
+    ]
+  }
+}

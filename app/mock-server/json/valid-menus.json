@@ -1,0 +1,19 @@
+{
+  "list": [
+    {
+      "id": 1,
+      "name": "控制台首页",
+      "url": "/profile"
+    },
+    {
+      "id": 2,
+      "name": "mdeditor",
+      "url": "/profile/mdeditor"
+    },
+    {
+      "id": 3,
+      "name": "修改用户信息",
+      "url": "/profile/setting"
+    }
+  ]
+}

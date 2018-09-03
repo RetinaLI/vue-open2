@@ -2,31 +2,31 @@
   <div class="box">
     <navbg v-if="isConsole"></navbg>
     <div class="service wrap clearfix">
-      <service-side-nav v-bind:current="apiType"></service-side-nav>
+      <service-side-nav v-bind:navData="listApiType" v-bind:currentNav="apiType"></service-side-nav>
       <div class="fr content">
         <div class="top">
           <div class="txt">车辆数据共包含
             <span>{{ pagination.totalCount }}</span>项</div>
           <div class="search">
-            <input type="text" class="ipt" v-model="keywords" @keyup.enter="getData">
-            <span class="el-icon-search vc" @click="getData"></span>
+            <input type="text" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
+            <span class="el-icon-search vc" @click="handleSearch"></span>
           </div>
         </div>
         <div class="main">
-          <div v-for="(item, index) in apis" :key="index">
-            <a :href="`/service/detail?id=${item.id}&apiType=${apiType}`">
-              <div class="api">
-                <h6>
-                  <i class="bor"></i>
-                  <span class="name text-overflow-single">{{ item.name }}</span>
-                  <span class="free" v-if="item.price === 0">免费</span>
-                </h6>
-                <p :class="{ 'text-overflow-multi': item.abstract.length > 68 }">{{ item.abstract }}</p>
-              </div>
-              <div class="apply">
-                <a :href="`/service/detail?id=${item.id}&apiType=${apiType}`">申请数据</a>
-              </div>
-            </a>
+          <div v-for="(item, index) in apis" :key="index" @click="jumpToDetail(item.id)">
+            <div class="api">
+              <h6>
+                <i class="bor"></i>
+                <span class="name text-overflow-single">{{ item.name }}</span>
+                <span class="free" v-if="item.price === 0">免费</span>
+              </h6>
+              <p :class="{ 'text-overflow-multi': item.title.length > 68 }">{{ item.title }}</p>
+            </div>
+            <div class="apply">
+              <span v-if="item.applyStatus === 0" class="ing">审核中</span>
+              <span v-else-if="item.applyStatus === 1" class="ed">已申请</span>
+              <span v-else @click.stop="checkLogin(item)" class="not">申请数据</span>
+            </div>
           </div>
         </div>
       </div>
@@ -38,32 +38,41 @@
   </div>
 </template>
 <script>
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 import Navbg from 'components/navbg/navbg';
+import { PassportService } from '@/services/passport.js';
+import ToastTip from '@/lib/message.js';
 import ServiceSideNav from 'components/serviceSideNav/serviceSideNav';
+import common from '@/lib/common.js';
+
 export default {
   data () {
     return {
+      // sideNav list
+      listApiType: [],
+      // sideNav 当前项id
+      apiType: 0,
+      passportService: new PassportService(),
+      apiService: new ApiService(),
       // param用于 传参 当前页
       param: 1,
       // 搜索的关键字
       keywords: '',
       pagination: {
         totalCount: 0,
-        pageSize: 9,
+        pageSize: 20,
         // curPage用于分页器当前页
         curPage: 1
       },
       apis: [],
-      apiType: 'car1',
       // 用于判断是前台页面还是控制台页面
       isConsole: true,
-      path: ''
+      path: '',
+      userInfo: {}
     };
   },
   created () {
-    this.path = this.$route.path;
-    this.getData();
+    this.getListApiType();
   },
   computed: {
     enCodeURIKeywords () {
@@ -71,34 +80,68 @@ export default {
     }
   },
   methods: {
-    getData () {
-      var q = this.$route.query;
-      // p 是当前的page
-      var { page: p, apiType: t } = q;
-      p = parseInt(p);
-      if (p) this.param = p;
-      if (t) this.apiType = t;
-      this.pagination.curPage = p;
-
+    jumpToDetail (id) {
+      window.location.href = `/service/detail/index.html?id=${id}`;
+    },
+    handleSearch () {
+      var url = this.$route.path;
+      var nUrl = url + '?page=1&apiType=' + this.apiType + '&name=' + this.enCodeURIKeywords;
+      window.location.href = nUrl;
+    },
+    async getData () {
       // 获取数据
-      axiosApi('getInterfaces', {
+      let res = await this.apiService.getInterfaces({
         'pageSize': this.pagination.pageSize,
-        'page': this.param,
-        'type': this.apiType,
-        'keywords': this.enCodeURIKeywords
-      })
-        .then(res => {
-          this.apis = res.data;
-          this.pagination.totalCount = res.totalCount;
-          this.pagination.curPage = p;
-        });
+        'pageNum': this.param,
+        'apiTypeId': this.apiType,
+        'name': this.enCodeURIKeywords
+      });
+      this.apis = res.list;
+      this.pagination.totalCount = res.count;
     },
     handleCurrentChange (val) {
       // 点击分页跳转
       var url = this.$route.path;
-      var nUrl = url + '?page=' + val + '&apiType=' + this.apiType + '&keywords=' + this.enCodeURIKeywords;
+      var nUrl = url + '?page=' + val + '&apiType=' + this.apiType + '&name=' + this.enCodeURIKeywords;
       window.location.href = nUrl;
+    },
+    async getListApiType () {
+      let res = await this.apiService.getListApiType();
+      if (Array.isArray(res) && res.length !== 0) {
+        this.listApiType = res;
+        this.path = this.$route.path;
+        var q = this.$route.query;
+        // p 是当前的page
+        var { page: p, apiType: t, name: keywords } = q;
+        p = parseInt(p || 1);
+        t = parseInt(t);
+        if (keywords) this.keywords = keywords;
+        if (p) this.param = p;
+        if (t) {
+          this.apiType = t;
+        } else {
+          this.apiType = res[0].id;
+        }
+        this.pagination.curPage = 1;
+        this.getData();
+      }
+    },
+    async checkLogin (api) {
+      this.userInfo = this.$store.getters.getCurrentUser;
+      if (this.userInfo && this.userInfo.name) {
+        let confirm = await ToastTip.confirm({ content: '请确认购买此数据接口' });
+        if (confirm) {
+          let res = await this.apiService.applyData({ id: api.id });
+          common.requestMsgHandler(res);
+          if (res.code === 1) api.applyStatus = 0;
+        }
+      } else {
+        ToastTip.warn('请先登录！');
+      }
     }
+  },
+  metaInfo: {
+    title: '数据服务-车联网数据开放平台'
   },
   components: {
     Navbg,
@@ -137,7 +180,7 @@ export default {
       .search {
         position: relative;
         width: 50px;
-        transition: width .3s;
+        transition: width 0.3s;
 
         .ipt {
           padding-left: 35px;
@@ -155,90 +198,98 @@ export default {
           cursor: pointer;
         }
         &:hover {
-            width: 200px;
+          width: 200px;
         }
       }
     }
     .main {
       & > div {
+        padding: 20px 30px;
         margin-bottom: 10px;
         width: 480px;
         height: 104px;
         background-color: #fff;
         box-shadow: 0 4px 4px 0 rgba(77, 144, 245, 0.03);
+        border: 1px solid transparent;
+        cursor: pointer;
         &:hover {
           border: 1px solid #eee;
-          box-shadow:0px 4px 16px 0px rgba(77,144,245,0.16);
+          box-shadow: 0px 4px 16px 0px rgba(77, 144, 245, 0.16);
           .bor {
             opacity: 1 !important;
           }
         }
-        & > a {
-          display: block;
-          width: 100%;
-          height: 100%;
-          padding: 20px 30px;
-          .api {
-            float: left;
-            width: 270px;
-            h6 {
-              font-size: 16px;
-              color: #333;
-              position: relative;
-              .bor {
-                position: absolute;
-                width: 6px;
-                height: 17px;
-                background-color: #4475fd;
-                top: 2px;
-                left: -30px;
-                opacity: 0;
-                transition: opacity 0.3s;
-              }
-              .name {
-                display: inline-block;
-                width: 270px;
-              }
-              .free {
-                padding: 2px 10px;
-                font-size: 12px;
-                border-radius: 20px;
-                background-color: #e5f8ec;
-                color: #00c046;
-              }
+
+        .api {
+          float: left;
+          width: 270px;
+          h6 {
+            font-size: 16px;
+            color: #333;
+            position: relative;
+            .bor {
+              position: absolute;
+              width: 6px;
+              height: 17px;
+              background-color: #4475fd;
+              top: 2px;
+              left: -30px;
+              opacity: 0;
+              transition: opacity 0.3s;
             }
-            p {
-              margin-top: 5px;
-              color: #aaa;
+            .name {
+              display: inline-block;
+              width: 270px;
+            }
+            .free {
+              padding: 2px 10px;
               font-size: 12px;
-              height: 50px;
+              border-radius: 20px;
+              background-color: #e5f8ec;
+              color: #00c046;
             }
           }
-          .apply {
-            float: right;
-            margin-top: 14px;
-            margin-right: 6px;
-            width: 100px;
-            height: 36px;
-            line-height: 36px;
-            text-align: center;
-            border: 1px solid #4475fd;
+          p {
+            margin-top: 5px;
+            color: #aaa;
+            font-size: 12px;
+            height: 50px;
+          }
+        }
+        .apply {
+          float: right;
+          margin-top: 14px;
+          margin-right: 6px;
+          width: 100px;
+          height: 36px;
+          line-height: 36px;
+          text-align: center;
+          overflow: hidden;
+
+          span {
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: #4475fd;
+            font-size: 14px;
+            text-indent: 15px;
             border-radius: 100px;
-            background: #ecf1fe url(./img/icon_apply.png) 5px center no-repeat;
-            &:hover {
-              background-color: #4475fd;
-              background-image: url(./img/icon_apply_grey.png);
-              a {
+            background-color: #ecf1fe;
+            &.not {
+              border: 1px solid #4475fd;
+              background-image: url(./img/icon_apply.png);
+              background-position: 5px center;
+              background-repeat: no-repeat;
+              &:hover {
+                background-color: #4475fd;
+                background-image: url(./img/icon_apply_grey.png);
                 color: #fff;
               }
             }
-            a {
-              display: block;
-              width: 100%;
-              height: 100%;
-              color: #4475fd;
-              font-size: 14px;
-              text-indent: 15px;
+            &.ed,
+            &.ing {
+              border: none;
+              text-indent: 0;
             }
           }
         }

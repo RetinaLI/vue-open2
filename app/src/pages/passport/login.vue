@@ -3,7 +3,7 @@
     <div class="content">
       <div class="wrapper">
         <h2 class="account-login">账号登录</h2>
-        <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="60px" label-position="left" class="form">
+        <el-form :model="ruleForm2" status-icon @keyup.enter.native="submitForm" :rules="rules2" ref="ruleForm2" label-width="60px" label-position="left" class="form">
           <el-form-item label="账号：" prop="account" >
             <el-input type="text" class="lucencyInput" v-model="ruleForm2.account" auto-complete="off" placeholder="请输入账号"></el-input>
           </el-form-item>
@@ -11,18 +11,18 @@
             <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item label="验证码：" prop="checkCode">
-            <el-input v-model.number="ruleForm2.checkCode" class="check-code" placeholder="请输入验证码" ></el-input>
-            <div class="img-box"><img :src="imgurl" alt=""></div>
+            <el-input v-model="ruleForm2.checkCode"  class="check-code" placeholder="请输入验证码" ></el-input>
+            <div class="img-box" @click="reGetCode"><img :src="imgurl" alt=""></div>
             <span></span>
           </el-form-item>
           <el-form-item class="btn">
-            <el-button type="primary" class="btn-login" @click="submitForm('ruleForm2')">登录</el-button>
+            <el-button type="primary" class="btn-login" @click="submitForm" >登录</el-button>
           </el-form-item>
         </el-form>
 
         <div class="box-right">
-          <a href="/passport/regist">免费注册</a>
-          <a href="/passport/retrieve">忘记密码？</a>
+          <a href="/passport/regist/index.html">免费注册</a>
+          <a href="/passport/retrieve/index.html">忘记密码？</a>
         </div>
       </div>
     </div>
@@ -49,47 +49,60 @@ export default {
       },
       rules2: {
         account: [
-          { validator: ValidateFactory.account, trigger: 'blur' }
+          { validator: ValidateFactory.account, required: true, trigger: 'blur' }
         ],
         password: [
-          { validator: ValidateFactory.password, trigger: 'blur' },
-          { min: 1, max: 20, message: '密码长度8-20位', trigger: 'blur' }
+          { validator: ValidateFactory.password.fn, required: true, trigger: 'blur' },
+          { min: ValidateFactory.password.min, max: ValidateFactory.password.max, message: ValidateFactory.password.message, trigger: 'blur' }
         ],
         checkCode: [
-          { validator: ValidateFactory.identifyCode, trigger: 'blur' }
+          { validator: ValidateFactory.identifyCode4, required: true, trigger: 'blur' }
         ]
       }
     };
   },
   created () {
-    this.imgurl = getUrlConfig('getIdentifyCodeUrl').url;
+    let url = getUrlConfig('getIdentifyCodeUrl').url;
+    this.imgurl = `${url}?t=` + (Date.now());
   },
   methods: {
-    submitForm (ruleForm2) {
-      this.$refs.ruleForm2.validate((valid) => {
+    submitForm () {
+      this.$refs.ruleForm2.validate(async (valid) => {
         if (valid) {
           // 表单提交
-          passportService.getLoginUserFormInfo({
+          let {code = 0, message = ''} = await passportService.login({
             username: this.ruleForm2.account,
             password: this.ruleForm2.password,
             zk_captcha: this.ruleForm2.checkCode
-          })
-            .then(res => {
-              // ToastTip.success('登录成功', 1000);
-              // setTimeout(() => {
-              //   let redirect = decodeURIComponent(this.$route.query.redirect || '/');
-              //   document.location.href = redirect;
-              // }, 2000);
-            });
+          });
+          if (code === 1) {
+            ToastTip.success('登录成功', 1000);
+            setTimeout(() => {
+              let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+              document.location.href = redirect;
+            }, 2000);
+          } else {
+            if (message) {
+              ToastTip.error(message, 1000);
+            } else {
+              ToastTip.error('登录失败啦', 1000);
+            }
+          }
         } else {
-          ToastTip.error('失败');
           return false;
         }
       });
     },
-    resetForm (ruleForm2) {
-      this.$refs[ruleForm2].resetFields();
+    reGetCode () {
+      let url = getUrlConfig('getIdentifyCodeUrl').url;
+      this.imgurl = `${url}?t=` + (Date.now());
+    },
+    resetForm () {
+      this.$refs.ruleForm2.resetFields();
     }
+  },
+  metaInfo: {
+    title: '用户登录-车联网数据开放平台'
   }
 };
 </script>
@@ -147,9 +160,20 @@ export default {
     margin-left: 168px;
   }
 
+  .el-form-item.is-required /deep/ .el-form-item__label{
+    &::before{
+      content:'';
+      margin-right:0px;
+    }
+  }
+
   /deep/ .el-form-item__label{
     color:#666;
     font-size:12px;
+    &::before{
+      content:'';
+      margin-right:0px;
+    }
   }
 
   /deep/ .el-form-item__content{

@@ -32,6 +32,8 @@
         http.js     -> axios拦截器
         http.url.config.js -> 用于配置请求参数辅助于axiosApi.js
         postApi.js  -> 辅助post（可不用）
+      lib
+        // 公用js文件
       pages
         // 每一个单独的组件即是（抽象出）的一个页面
       router

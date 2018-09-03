@@ -2,12 +2,9 @@
   <div class="box">
     <navbg></navbg>
     <div class="content wrap clearfix">
-      <service-side-nav v-bind:current="apiType"></service-side-nav>
+      <service-side-nav v-bind:navData="listApiType" v-bind:currentNav="apiType"></service-side-nav>
       <div class="api fl">
-        <h3>{{ api.name }}</h3>
-        <div class="detail">
-          <mavon-editor class="my-markdown-editor" v-bind:value="api.detail" v-bind="mdData"></mavon-editor>
-        </div>
+        <div class="detail" id="markdown"></div>
       </div>
       <div class="buy-box fr">
         <h3>{{ api.name }}</h3>
@@ -16,10 +13,20 @@
           <span class="money">{{ '￥' + api.price*100000 }}</span>
           <span class="count">/100000次</span>
         </p>
-        <p class="limit">每月上限{{ api.limit }}元</p>
-        <div class="apply" @click="checkUser">
-          <img src="./img/icon_buy.svg" alt="">
-          <span>立即购买</span>
+        <p class="limit">每月上限{{ api.monthlyCapPrice }}元</p>
+        <div>
+          <div v-if="api.applyStatus === 0" class="apply ing">
+            <img src="./img/icon_buy.svg" alt="">
+            <span>审核中</span>
+          </div>
+          <div v-else-if="api.applyStatus === 1" class="apply ed">
+            <img src="./img/icon_buy.svg" alt="">
+            <span class="ed">已申请</span>
+          </div>
+          <div v-else class="apply" @click="checkLogin(api)">
+            <img src="./img/icon_buy.svg" alt="">
+            <span>立即申请</span>
+          </div>
         </div>
       </div>
     </div>
@@ -28,73 +35,87 @@
 <script>
 import Navbg from 'components/navbg/navbg';
 import serviceSideNav from 'components/serviceSideNav/serviceSideNav';
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 import ToastTip from '@/lib/message.js';
+import common from '@/lib/common.js';
+// for markdown
+import '@/lib/editormd/editormd.preview.css';
+import '@/lib/editormd/marked.min.js';
+import '@/lib/editormd/prettify.min.js';
+import '@/lib/editormd/editormd.js';
+
 export default {
   data () {
     return {
-      apiType: '',
+      apiService: new ApiService(),
+      listApiType: [],
+      apiType: 0,
       api: {
         detail: '***暂无数据***'
-      },
-      mdData: {
-        toolbarsFlag: false,
-        subfield: false,
-        defaultOpen: 'preview'
       },
       userInfo: {}
     };
   },
   created () {
-    this.userInfo = this.$store.getters.getCurrentUser;
-    var { apiType, id } = this.$route.query;
-    this.apiType = apiType;
-    axiosApi('getApiDetail', {
-      data: {
-        id
-      }
-    })
-      .then(res => {
-        this.api = res.data;
-      });
+    this.getApiDetail();
+    this.getListApiType();
   },
   components: {
     Navbg,
     serviceSideNav
   },
   methods: {
-    checkUser () {
-      if (this.userInfo && this.userInfo.id) {
-        let isSureGet = ToastTip.confirm({
-          content: `你将购买<b>${this.api.name}</b>接口`
+    async getApiDetail () {
+      var { id } = this.$route.query;
+      let res = await this.apiService.getApiDetail({ id });
+      this.api = res;
+      this.apiType = res.apiType.id;
+      this.apiTypeStatus = res.applyStatus;
+      /* eslint-disable */
+        editormd.markdownToHTML('markdown', {
+          markdown: res.intro
         });
-        isSureGet.then(() => {
-          ToastTip.info('确认购买，跳转到购买页面！');
-        }).catch(() => {});
-      } else {
-        ToastTip.warn('请先登录，3秒后自动跳转');
-        window.setTimeout(() => {
-          window.location.href = '/login';
-        }, 3000);
+        /* eslint-enable */
+    },
+    async getListApiType () {
+      let res = await this.apiService.getListApiType();
+      if (Array.isArray(res) && res.length !== 0) {
+        this.listApiType = res;
       }
     },
-    handleSure () {
-      this.showDialog = false;
+    async checkLogin (api) {
+      this.userInfo = this.$store.getters.getCurrentUser;
+      if (this.userInfo && this.userInfo.name) {
+        let confirm = await ToastTip.confirm({
+          content: '请确认购买此数据接口'
+        });
+        if (confirm) {
+          let res = await this.apiService.applyData({ id: api.id });
+          common.requestMsgHandler(res);
+          if (res.code === 1) api.applyStatus = 0;
+        }
+      } else {
+        ToastTip.warn('请先登录！');
+      }
     }
+  },
+  metaInfo: {
+    title: '数据详情-车联网数据开放平台'
   }
 };
 </script>
 <style lang="scss" scoped>
+
 .box {
   background-color: #f6f9fc;
 }
 .api {
   margin-left: 20px;
+  margin-bottom: 50px;
   width: 700px;
-  height: 609px;
-  padding: 15px 32px;
+  padding: 15px 22px;
   background-color: #fff;
-  h3 {
+  &>h3 {
     font-size: 16px;
     color: #333;
     padding-bottom: 10px;
@@ -115,7 +136,7 @@ export default {
     border-bottom: 1px solid #eee;
   }
   .abstract {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #aaa;
   }
@@ -138,7 +159,7 @@ export default {
     font-size: 12px;
   }
   .apply {
-    margin: 0 auto;
+    margin: 40px auto 0;
     width: 200px;
     height: 40px;
     border-radius: 40px;
@@ -148,6 +169,22 @@ export default {
     text-align: center;
     line-height: 40px;
     cursor: pointer;
+    &.ed {
+      background-color: #dbf7cd !important;
+      color: #67c23a;
+      cursor: inherit;
+    }
+    &.ing {
+      background-color: #f3e3c6 !important;
+      cursor: inherit;
+      color: #cca264;
+    }
+    &.ed,
+    &.ing {
+      img {
+        display: none;
+      }
+    }
   }
 }
 </style>

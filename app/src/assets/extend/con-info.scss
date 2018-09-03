@@ -8,16 +8,6 @@ $allColor: #4475FD;
     background-color: #fff;
     min-height: 77%;
   }
-  /deep/ .avatar-uploader {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  /deep/ .avatar-uploader:hover {
-    border-color: #409EFF;
-  }
   .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;

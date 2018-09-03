@@ -230,7 +230,7 @@ export default {
     };
   },
   metaInfo: {
-    title: '车联网数据开放平台-首页'
+    title: '车联网数据开放平台'
   },
   components: {
     PartTitle

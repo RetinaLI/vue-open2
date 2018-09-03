@@ -141,6 +141,9 @@ export default {
         }
       }]
     };
+  },
+  metainfo: {
+    title: '数据看板-车联网数据开放平台'
   }
 
 };

@@ -1,33 +1,21 @@
 <template>
   <div class="fl menus">
-    <h5>
-      <a :class="[{'on': currentNav === 'car1'}, 'run']" :href="this.url + '?apiType=car1'">
-        车辆运行数据
+    <h5 v-for="(item, index) in navData" :key="index">
+      <a :class="{'on': currentNav == item.id}" :href="`${url}?apiType=${item.id}`">
+        {{ item.name }}
       </a>
-    </h5>
-    <h5>
-      <a :class="[{'on': currentNav === 'car2'}, 'analysis']" :href="this.url + '?apiType=car2'">车辆数据分析</a>
-    </h5>
-    <h5>
-      <a :class="[{'on': currentNav === 'car3'}, 'user']" :href="this.url + '?apiType=car3'">车主服务数据</a>
     </h5>
   </div>
 </template>
 <script>
 export default {
-  props: ['current'],
+  props: ['navData', 'currentNav'],
   data () {
     return {
-      currentNav: this.current,
-      url: ''
+      url: '/service/index.html'
     };
   },
   created () {
-    if (this.$route.name !== 'service') {
-      this.url = '/service';
-    } else {
-      this.url = this.$route.path;
-    }
   }
 };
 </script>

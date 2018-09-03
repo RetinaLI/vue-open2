@@ -14,10 +14,6 @@ export const homeSolution = () => import('@/pages/home/solution/solution');
 export const homeDynamic = () => import('@/pages/home/dynamic/dynamic');
 export const homeDynamicIndustry = resolve => require(['components/dynamicIndustry/industry'], resolve);
 export const homeDynamicProducts = resolve => require(['components/dynamicProducts/products'], resolve);
-export const apiDetail = () => import('@/pages/api/detail');
-export const profileIndex = () => import('@/pages/profile/index');
-export const profileMdeditor = () => import('@/pages/profile/mdeditor');
-export const profileSetting = () => import('@/pages/profile/setting');
 
 // 控制台
 export const ConLayout = () => import('@/components/con-layout');

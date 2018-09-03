@@ -4,20 +4,21 @@
        @mouseout="hideInfo"
   >
     <div class="con-user-title" :class="{'is-index': isIndex}">
-      <i class="con-user-icon" :style="{backgroundImage: `url(${userIcon})`}">
+      <i class="con-user-icon" :style="{backgroundImage: `url(${getCurrentUser.headImageUrl || userIcon})`}">
         <b class="con-user-badge" v-if="getNewsLength > 0">{{getNewsLength}}</b>
       </i>
-      <span class="con-user-name">小明</span>
+      <span class="con-user-name text-overflow-single">{{getCurrentUser.name}}</span>
       <i class="user-caret" :class="{'el-icon-caret-bottom': !showed, 'el-icon-caret-top': showed}"></i>
     </div>
     <transition name="flipInY">
       <ul class="con-user-info-list" v-show="showed">
         <li>
           <div class="con-user-list-title">
-            <i class="con-user-icon" :style="{backgroundImage: `url(${userIcon})`}"></i>
+            <i class="con-user-icon" :style="{backgroundImage: `url(${getCurrentUser.headImageUrl || userIcon})`}"></i>
             <div class="con-user-list-info">
-              <span class="con-user-name">小明</span>
-              <span class="con-user-email">{{list.email || '去绑定'}}</span>
+              <span class="con-user-name text-overflow-single"
+                    :title="getCurrentUser.name">{{getCurrentUser.name}}</span>
+              <span class="con-user-email text-overflow-single" :title="getCurrentUser.email">{{getCurrentUser.email || '去绑定'}}</span>
               <el-button type="primary" size="mini" v-show="false">修改密码</el-button>
             </div>
           </div>
@@ -29,7 +30,7 @@
         >
           <router-link :to="item.path" tag="div">
             {{item.name}}
-            <i v-if="item.path==='/console/news' && getNewsLength > 0" class="con-news-read">未读{{getNewsLength}}条</i>
+            <i v-if="item.path==='/console/news/index.html' && getNewsLength > 0" class="con-news-read">未读{{getNewsLength}}条</i>
           </router-link>
         </li>
         <li class="con-user-item" @click="logout">退出</li>
@@ -40,30 +41,31 @@
 
 <script>
 import userIcon from './images/icon-user.png';
-// import {mapActions, mapGetters} from 'vuex';
+import { mapGetters } from 'vuex';
+import ToastTip from '@/lib/message.js';
+import { PassportService } from '@/services/passport';
+let passportService = new PassportService();
+
 export default {
   name: 'LoginUserTitle',
   data () {
     return {
       userIcon,
-      list: {
-        email: 'wjfdljslkjxnbo@foton.cm.con'
-      },
       showed: false,
       timers: null,
       title: [
         {
           name: '账户信息',
-          path: '/console/info'
-        },
+          path: '/console/info/index.html'
+        }
         // {
         //   name: '我的消息',
         //   path: '/console/news'
         // },
-        {
-          name: '我的余额',
-          path: '/console/balance'
-        }
+        // {
+        //   name: '我的余额',
+        //   path: '/console/balance/index.html'
+        // }
 
       ],
       getNewsLength: 0
@@ -76,9 +78,9 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters([
-    //   'getNewsLength'
-    // ])
+    ...mapGetters([
+      'getCurrentUser'
+    ])
   },
   methods: {
     // ...mapActions([
@@ -96,9 +98,21 @@ export default {
         _self.showed = false;
       }, 150);
     },
-    logout () {
-      this.hideInfo();
-      alert('退出');
+    async logout () {
+      let res = await passportService.logout();
+      if (res.code === 1) {
+        ToastTip.success(res.message, 2000);
+        this.hideInfo();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        if (res.message) {
+          ToastTip.error(res.message, 2000);
+        } else {
+          ToastTip.error('退出失败', 2000);
+        }
+      }
     }
   },
   mounted: function () {
@@ -154,6 +168,7 @@ export default {
         }
       }
       .con-user-name {
+        max-width: 90px;
         font-size: 14px;
         color: $color666;
         margin-right: 14px;

@@ -30,15 +30,15 @@
         <el-form :model="ruleForm1" status-icon :rules="rules1" ref="ruleForm1" label-width="60px" label-position="left" class="form1">
           <h2 class="fill-account">请填写您需要找回的账号</h2>
           <el-form-item prop="account" >
-            <el-input type="text" class="lucencyInput" v-model="ruleForm1.account" auto-complete="off" placeholder="请输入账号"></el-input>
+            <el-input type="text" class="lucencyInput" v-model="ruleForm1.account" auto-complete="off" placeholder="请填写用户名或邮箱"></el-input>
           </el-form-item>
           <el-form-item prop="checkCode">
-            <el-input v-model.number="ruleForm1.checkCode" class="check-code" placeholder="请输入验证码" ></el-input>
-            <div class="img-box"><img :src="imgurl" alt=""></div>
+            <el-input v-model="ruleForm1.checkCode" class="check-code" placeholder="请输入验证码" ></el-input>
+            <div class="img-box" @click="reGetCode"><img :src="imgurl" alt=""></div>
             <span></span>
           </el-form-item>
           <el-form-item class="btn">
-            <el-button type="primary" class="btn-login" @click="submitForm('ruleForm1')">下一步</el-button>
+            <el-button type="primary" class="btn-login" @click="submitForm()">下一步</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -46,16 +46,16 @@
         <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="60px" label-position="left" class="form2">
           <h2 class="fill-account">为了您的账号安全，请完成身份验证</h2>
           <p class="mail-check1" ><img :src="emailurl" alt=""> 邮箱验证</p>
-          <p class="mail-check2">已发送验证码到邮箱：<span class="email-p1">223</span><span>***</span><span class="email-p2">126.com</span> </p>
-          <el-form-item prop="checkCode">
-            <el-input v-model.number="ruleForm2.checkCode" class="check-code" placeholder="请输入验证码" ></el-input>
-            <button round class="re-send" @click="resend()">重新发送</button>
+          <p class="mail-check2">已发送验证码到邮箱：<span class="email-p1" v-text="user3chart"></span><span>***</span><span class="email-p2" v-text="userLast " >126.com</span> </p>
+          <el-form-item prop="emailCode">
+            <el-input v-model="ruleForm2.emailCode" class="check-code" placeholder="请输入邮箱验证码" ></el-input>
+            <button round class="re-send" v-bind:disabled="bindDisable" :class="{'disable-color': disableC}" @click.prevent="resend">{{resendText}}</button>
           </el-form-item>
           <el-form-item prop="newPassword" >
-            <el-input type="text" class="lucencyInput" v-model="ruleForm2.newPassword" auto-complete="off" placeholder="请输入新密码"></el-input>
+            <el-input type="password" class="lucencyInput" v-model="ruleForm2.newPassword" auto-complete="off" placeholder="请输入新密码"></el-input>
           </el-form-item>
           <el-form-item class="btn">
-            <el-button type="primary" class="btn-login" @click="submitForm2('ruleForm2')">下一步</el-button>
+            <el-button type="primary" class="btn-login" @click="submitForm2()">下一步</el-button>
           </el-form-item>
           <p class="kefu">邮箱不可用，可使用客服申诉 </p>
         </el-form>
@@ -63,7 +63,7 @@
       <div class="wrapper wrapper3" v-show="form3">
         <h2>密码修改成功</h2>
         <div class="circle"><i class="el-icon-check"></i></div>
-        <p>密码修改成功，即将跳转至 <a href="/login">登录页面</a></p>
+        <p>密码修改成功，即将跳转至 <a @click="toLogin" class="to-login">登录页面</a></p>
       </div>
     </div>
   </div>
@@ -72,12 +72,23 @@
 <script>
 import ValidateFactory from '@/lib/validate';
 import ToastTip from '@/lib/message.js';
+import { getUrlConfig } from '@/http/http.url.config';
+import { PassportService } from '@/services/passport';
+let passportService = new PassportService();
 
 export default {
   name: 'retrieve',
   data () {
     return {
-      imgurl: require('project-assets/images/home/bigdata1.png'),
+      passportService: new PassportService(),
+      imgurl: null,
+      userEmail: '',
+      time: 59,
+      resendText: '60s',
+      disableC: true,
+      bindDisable: true,
+      user3chart: '222',
+      userLast: 'foton.com.cn',
       emailurl: require('project-assets/images/passport/icon-mail.png'),
       step2: false,
       step3: false,
@@ -90,82 +101,143 @@ export default {
       },
       ruleForm2: {
         newPassword: '',
-        checkCode: ''
+        emailCode: ''
       },
       rules1: {
         account: [
-          { validator: ValidateFactory.account, trigger: 'blur' }
+          { validator: ValidateFactory.retrieveAccount, required: true, trigger: 'blur' }
         ],
         checkCode: [
-          { validator: ValidateFactory.identifyCode, trigger: 'blur' }
+          { validator: ValidateFactory.identifyCode4, required: true, trigger: 'blur' }
         ]
       },
       rules2: {
         newPassword: [
-          { validator: ValidateFactory.password, trigger: 'blur' }
+          { validator: ValidateFactory.password.fn, required: true, trigger: 'blur' },
+          { min: ValidateFactory.password.min, max: ValidateFactory.password.max, message: ValidateFactory.password.message, trigger: 'blur' }
         ],
-        checkCode: [
-          { validator: ValidateFactory.identifyCode, trigger: 'blur' }
+        emailCode: [
+          { validator: ValidateFactory.identifyCode6, required: true, trigger: 'blur' }
         ]
       }
     };
   },
+  created () {
+    let url = getUrlConfig('getIdentifyCodeUrl').url;
+    this.imgurl = `${url}?t=` + (Date.now());
+  },
   methods: {
-    submitForm (ruleForm1) {
-      this.$refs.ruleForm1.validate((valid) => {
+    submitForm () {
+      this.$refs.ruleForm1.validate(async (valid) => {
         if (valid) {
-          // 表单提交
-          // axiosApi('getLoginUserFormInfo', {
-          //   data: {
-          //     userName : this.ruleForm1.account,
-          //     userPassword : this.ruleForm1.password,
-          //   }
-          // })
-          //   .then(res => {
-          //     console.log(res);
-          //   });
-          ToastTip.success('成功');
-          setTimeout(() => {
-            // let redirect = decodeURIComponent(this.$route.query.redirect || '/');
-            // document.location.href = redirect;
-            this.step2 = true;
-            this.form1 = false;
-            this.form2 = true;
-          }, 2000);
+          let res = await passportService.retrievePassword({
+            queryInfo: this.ruleForm1.account,
+            zk_captcha: this.ruleForm1.checkCode
+          });
+          if (res.code === 1) {
+            this.userEmail = res.data.email;
+            this.user3chart = this.userEmail.substr(0, 3);
+            this.userLast = this.userEmail.substr(this.userEmail.indexOf('@'));
+            ToastTip.success(res.message);
+            setTimeout(() => {
+              this.step2 = true;
+              this.form1 = false;
+              this.form2 = true;
+              let timer = setInterval(() => {
+                if (this.time === 0) {
+                  clearInterval(timer);
+                  this.resendText = '重新发送';
+                  this.disableC = false;
+                  this.bindDisable = false;
+                } else {
+                  this.resendText = this.time + 's';
+                  this.disableC = true;
+                  this.bindDisable = true;
+                  this.time--;
+                }
+              }, 1000);
+            }, 2000);
+          } else {
+            if (res.message) {
+              ToastTip.error(res.message, 1000);
+            } else {
+              ToastTip.error('找回失败', 1000);
+            }
+          }
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
     },
-    submitForm2 (ruleForm2) {
-      this.$refs.ruleForm2.validate((valid) => {
+    submitForm2 () {
+      this.$refs.ruleForm2.validate(async (valid) => {
         if (valid) {
-          // 表单提交
-          // axiosApi('getLoginUserFormInfo', {
-          //   data: {
-          //     userName : this.ruleForm1.account,
-          //     userPassword : this.ruleForm1.password,
-          //   }
-          // })
-          //   .then(res => {
-          //     console.log(res);
-          //   });
-          ToastTip.success('成功');
-          setTimeout(() => {
-            // let redirect = decodeURIComponent(this.$route.query.redirect || '/');
-            // document.location.href = redirect;
-            this.step3 = true;
-            this.form2 = false;
-            this.form3 = true;
-          }, 2000);
+          let {code = 0, message = ''} = await passportService.resetPassword({
+            email: this.userEmail,
+            emailCode: this.ruleForm2.emailCode,
+            password: this.ruleForm2.newPassword
+          });
+          if (code === 1) {
+            ToastTip.success(message, 1000);
+            setTimeout(() => {
+              this.step3 = true;
+              this.form1 = false;
+              this.form2 = false;
+              this.form3 = true;
+              setTimeout(() => {
+                this.passportService.redirectToLogin();
+              }, 2000);
+            }, 2000);
+          } else {
+            if (message) {
+              ToastTip.error(message, 1000);
+            } else {
+              ToastTip.error('重置失败', 1000);
+            }
+          };
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
+    },
+    reGetCode () {
+      let url = getUrlConfig('getIdentifyCodeUrl').url;
+      this.imgurl = `${url}?t=` + (Date.now());
+    },
+    toLogin () {
+      this.passportService.redirectToLogin();
+    },
+    async resend () {
+      let res = await this.passportService.resendCode({
+        email: this.userEmail
+      });
+      if (res.code === 1) {
+        ToastTip.success(res.message, 1000);
+        this.time = 59;
+        let timer = setInterval(() => {
+          if (this.time === 0) {
+            clearInterval(timer);
+            this.resendText = '重新发送';
+            this.disableC = false;
+            this.bindDisable = false;
+          } else {
+            this.resendText = this.time + 's';
+            this.disableC = true;
+            this.bindDisable = true;
+            this.time--;
+          }
+        }, 1000);
+      } else {
+        if (res.message) {
+          ToastTip.error(res.message, 1000);
+        } else {
+          ToastTip.error('发送失败', 1000);
+        }
+      }
     }
-
+  },
+  metaInfo: {
+    title: '找回密码-车联网数据开放平台'
   }
 };
 </script>
@@ -268,14 +340,13 @@ export default {
           margin-bottom: 10px;
           margin-left: 138px;
 
-          /deep/ .el-form-item__content{
+          .el-form-item__content{
             margin-left:40px;
-
-            /deep/ .el-input {
+            .lucencyInput{
               width: 68%;
             }
 
-            /deep/ .el-input__inner{
+            .el-input__inner{
               border-radius: 20px;
               width: 200px;
               height: 30px;
@@ -284,33 +355,33 @@ export default {
               font-size:12px;
             }
 
-            /deep/ .check-code .el-input__inner{
+            .check-code .el-input__inner{
               width:115px;
             }
 
-            /deep/ .check-code{
+            .check-code{
               width: 31%;
             }
 
-            /deep/ .check-pic{
+            .check-pic{
               width:30%;
               border:1px solid red;
             }
 
-            /deep/ .check-code &.el-form-item__error{
+            .check-code &.el-form-item__error{
               left: 42%;
             }
 
-            /deep/ .check-code > .el-input__suffix{
+            .check-code > .el-input__suffix{
               right:-143px;
             }
 
-            /deep/ .el-form-item__error {
+            .el-form-item__error {
               top: 11px;
               left: 57%;
             }
 
-            /deep/ .el-icon-circle-close:before{
+            .el-icon-circle-close:before{
               content:''
             }
 
@@ -408,14 +479,14 @@ export default {
           margin-bottom: 10px;
           margin-left: 126px;
 
-          /deep/ .el-form-item__content{
+          .el-form-item__content{
             margin-left:40px;
 
-            /deep/ .el-input {
+            .el-input {
               width: 68%;
             }
 
-            /deep/ .el-input__inner{
+            .el-input__inner{
               border-radius: 20px;
               width: 230px;
               height: 30px;
@@ -424,15 +495,15 @@ export default {
               font-size:12px;
             }
 
-            /deep/ .check-code .el-input__inner{
+            .check-code .el-input__inner{
               width:130px;
             }
 
-            /deep/ .check-code{
+            .check-code{
               width: 31%;
             }
 
-            /deep/ .check-pic{
+            .check-pic{
               width:30%;
               border:1px solid red;
             }
@@ -448,13 +519,18 @@ export default {
               vertical-align: middle;
               margin-left: 19px;
               text-align: center;
+              &.disable-color{
+                color:#666;
+                background: #eee;
+                font-weight: bold;
+              }
             }
 
-            /deep/ .check-code &.el-form-item__error{
+            .check-code &.el-form-item__error{
               left: 42%;
             }
 
-            /deep/ .check-code > .el-input__suffix{
+            .check-code > .el-input__suffix{
               right:-143px;
             }
 
@@ -470,12 +546,12 @@ export default {
               }
             }
 
-            /deep/ .el-form-item__error {
+            .el-form-item__error {
               top: 11px;
               left: 59%;
             }
 
-            /deep/ .el-icon-circle-close:before{
+            .el-icon-circle-close:before{
               content:''
             }
           }
@@ -533,6 +609,10 @@ export default {
           font-size:12px;
           text-decoration: underline;
           color:#4475FD;
+          &:hover{
+            cursor: pointer;
+            color: #1BCD93;
+          }
         }
       }
     }

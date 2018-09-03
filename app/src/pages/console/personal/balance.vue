@@ -6,10 +6,10 @@
     </el-row>
     <div class="con-info-user">
       <!--<h3 class="con-info-user-title">-->
-        <!--我的余额-->
-        <!--<router-link to="/console/pay" tag="div">-->
-          <!--<el-button type="primary" size="mini">充值</el-button>-->
-        <!--</router-link>-->
+      <!--我的余额-->
+      <!--<router-link to="/console/pay" tag="div">-->
+      <!--<el-button type="primary" size="mini">充值</el-button>-->
+      <!--</router-link>-->
       <!--</h3>-->
       <div class="con-bal-data">
         <div class="con-bal-data-tab">
@@ -55,10 +55,14 @@
 <script>
 import ConBreadCrumbs from '@/components/console/con-bread-crumbs/index';
 import ConBlock from '@/components/console/con-block/con-block';
-import {BalanceService} from '@/services/balance';
+import { BalanceService } from '@/services/balance';
+
 let balanceService = new BalanceService();
 export default {
   name: 'PersonalBalance',
+  metaInfo: {
+    title: '控制台-我的余额'
+  },
   data () {
     return {
       activeName: 'pay',
@@ -94,7 +98,7 @@ export default {
       },
       payBtn: {
         title: '充值',
-        path: '/console/pay'
+        path: '/console/pay/index.html'
       }
     };
   },
@@ -120,33 +124,39 @@ export default {
     },
     pageChangeHandle (val) {
       // 将路由跳转到对应page页
-      this.$router.push({path: '/console/balance', query: {type: this.activeName, page: val}});
+      this.$router.push({path: '/console/balance/index.html', query: {type: this.activeName, page: val}});
     },
     async getTabData () {
       // 获取tab栏数据
-      let {page, type = 'pay'} = this.$route.query;
+      let {page = 1, type = 'pay'} = this.$route.query;
       // 修改tab默认显示
       this.activeName = type;
       if (type === 'pay') {
         this.payPage = page;
-        let {data, totalCount} = await balanceService.getTabPay();
+        let {data = [], totalCount = 0} = await balanceService.getTabPay({
+          pageSize: 10,
+          pageNum: page
+        });
         this.tabs[0].data = data;
         this.tabs[0].total = totalCount;
       } else if (type === 'cost') {
         this.costPage = page;
-        let {data, totalCount} = await balanceService.getTabCost();
+        let {data = [], totalCount = 0} = await balanceService.getTabCost({
+          pageSize: 10,
+          pageNum: page
+        });
         this.tabs[1].data = data;
         this.tabs[1].total = totalCount;
       }
     },
     async getTop () {
       // 获取顶部数据
-      let {yuE, cost, pay, mouthCost} = await balanceService.getTop();
+      let {yesterdayConsumeSum = 0, money = 0, monthRechargeSum = 0, monthConsumeSum = 0} = await balanceService.getTop();
       // console.log(yuE, cost, pay, mouthCost);
-      this.block[0].num = yuE;
-      this.block[1].num = cost;
-      this.block[2].num = pay;
-      this.block[3].num = mouthCost;
+      this.block[0].num = money;
+      this.block[1].num = yesterdayConsumeSum;
+      this.block[2].num = monthRechargeSum;
+      this.block[3].num = monthConsumeSum;
     }
   },
   mounted: function () {
@@ -164,11 +174,13 @@ export default {
   .con-bal-cost-part {
     padding: 15px;
   }
+
   .con-bal-data {
     .con-bal-data-tab {
       padding-bottom: 15px;
     }
   }
+
   .con-bal-pages {
     margin-top: 25px;
     text-align: center;

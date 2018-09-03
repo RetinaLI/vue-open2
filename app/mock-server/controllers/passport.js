@@ -2,24 +2,52 @@
 // let path = require('path');
 
 module.exports = {
-  getLoginUserFormInfo () {
+  login () {
+    return {
+      'authFailTimes': 1,
+      'info': '成功11111',
+      'success': true,
+      'texts': '',
+      'url': '',
+      'user': {'id': 41}
+    };
+  },
+  regist () {
+    return {
+      'code': 1,
+      'msg': 'success!!!!!'
+    };
+  },
+  retrivePassword () {
     return {
       'data': {
-        'authFailTimes': 0,
-        'info': '',
-        'success': true,
-        'texts': '',
-        'url': '',
-        'user': {'id': 41}
-      }
+        'email': 'we233@foton.cn'
+      },
+      'code': 1,
+      'msg': 'success'
     };
-  }
-
-  getRegistInfo () {
+  },
+  resetPassword () {
     return {
       'code': 1,
       'msg': 'success'
     };
+  },
+  resendCode () {
+    return {
+      'data': {
+        'email': 'we233@foton.cn'
+      },
+      'code': 1,
+      'msg': 'success'
+    };
+  },
+  logout () {
+    return {
+      'info': '退出成功啦啦啦',
+      'success': true,
+      'text': '',
+      'url': ''
+    };
   }
-
 };

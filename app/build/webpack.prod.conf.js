@@ -11,6 +11,33 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const PrerenderSPAPlugin = require('prerender-spa-plugin')
+const ROUTES = require('../src/router/config');
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
+let staticRoutes, dynamicRoutes = [];
+
+let getStaticRoutes = (routes = [], root_path = '') => {
+  let rs = [];
+
+  routes.forEach(elem => {
+    let path = root_path + elem.path;
+    if(elem.children) {
+      let rss = getStaticRoutes(elem.children, path.endsWith('/') ? path : (path + '/'));
+      rs = rs.concat(rss);
+    } else {
+      if(elem.isStatic) rs.push(path);
+      else if (path.endsWith('/index.html')) dynamicRoutes.push(path);
+    }
+  });
+
+  return rs;
+};
+
+staticRoutes = getStaticRoutes(ROUTES);
+
+console.info('====================静态路由：=======================');
+console.info(staticRoutes);
+console.info(dynamicRoutes);
+console.info('====================================================');
 
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -80,20 +107,23 @@ const webpackConfig = merge(baseWebpackConfig, {
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'manual'
     }),
-    new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, '../dist/console/index.html'),
-      template: 'index.html',
-      // inject: 'head',
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true
-        // more options:
-        // https://github.com/kangax/html-minifier#options-quick-reference
-      },
-      chunks: ['manifest', 'vendor', 'styles', 'app'],
-      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'manual'
+    ...dynamicRoutes.map(elem => {
+      console.info('../dist' + elem);
+      return new HtmlWebpackPlugin({
+        filename: path.resolve(__dirname, '../dist' + elem),
+        template: 'index.html',
+        // inject: 'head',
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true
+          // more options:
+          // https://github.com/kangax/html-minifier#options-quick-reference
+        },
+        chunks: ['manifest', 'vendor', 'styles', 'app'],
+        // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+        chunksSortMode: 'manual'
+      });
     }),
     // keep module.id stable when vendor modules does not change
     new webpack.HashedModuleIdsPlugin(),
@@ -142,20 +172,52 @@ const webpackConfig = merge(baseWebpackConfig, {
       // Required - The path to the webpack-outputted app to prerender.
       staticDir: path.join(__dirname, '../dist'),
       // Required - Routes to render.
-      routes: [
-          '/', '/products', '/cars', '/cars/truck', '/cars/energy',
-          '/cars/mechanics', '/cars/bus', '/cars/passenger', '/profile', '/docs/api/detail',
-          '/dynamic/industry', '/dynamic/products', '/dynamic/industry/detail',
-          '/dynamic/products/detail',
-          '/solution', '/login', '/regist', '/servicePrivate', '/retrieve',
-          '/service'
-      ],
+      routes: staticRoutes,
       postProcess (renderedRoute) {
+        if (renderedRoute.route.endsWith('.html')) {
+          renderedRoute.outputPath = path.join(__dirname, '../dist', renderedRoute.route)
+        }
         renderedRoute.html = renderedRoute.html.replace(/(\<head\>.*?)(\<script.*?\<\/script\>){1,}(.*\<\/head\>)/g, '$1$3');
-        renderedRoute.html = renderedRoute.html.replace(/(\<section.*\<\/section\>)(.*)/gsi, '<div id=app>$1</div>$2');
+        if (staticRoutes.indexOf(renderedRoute.route) === -1) {
+          renderedRoute.html = renderedRoute.html.replace(/(\<section.*\<\/section\>)(.*)/gsi, '<div id=app></div>$2');
+        } else {
+          renderedRoute.html = renderedRoute.html.replace(/(\<section)(.*)/g, '$1 style="display:none !important" $2');
+          renderedRoute.html = renderedRoute.html.replace(/(\<section.*\<\/section\>)(.*)/gsi, '<div id=app>$1</div>$2');
+        }
         return renderedRoute
-      }
-    })
+      },
+      renderer: new Renderer({
+        // Optional - The name of the property to add to the window object with the contents of `inject`.
+        injectProperty: 'PROJECT',
+        // Optional - Any values you'd like your app to have access to via `window.injectProperty`.
+        inject: {
+          BUILDING: true
+        },
+
+        // Optional - defaults to 0, no limit.
+        // Routes are rendered asynchronously.
+        // Use this to limit the number of routes rendered in parallel.
+        maxConcurrentRoutes: 4,
+
+        // Optional - Wait to render until the specified event is dispatched on the document.
+        // eg, with `document.dispatchEvent(new Event('custom-render-trigger'))`
+        // renderAfterDocumentEvent: 'custom-render-trigger',
+
+        // Optional - Wait to render until the specified element is detected using `document.querySelector`
+        // renderAfterElementExists: 'my-app-element',
+
+        // Optional - Wait to render until a certain amount of time has passed.
+        // NOT RECOMMENDED
+        renderAfterTime: 5000, // Wait 5 seconds.
+
+        // Other puppeteer options.
+        // (See here: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions)
+        headless: false // Display the browser window when rendering. Useful for debugging.
+      })
+    }),
+    new webpack.DefinePlugin({
+      'PROJECT.BUILDING': false
+    }),
   ]
 })
 

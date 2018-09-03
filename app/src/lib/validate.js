@@ -3,13 +3,13 @@ export default class ValidateFactory {
     if (value === '') {
       callback(new Error('*请输入用户名'));
     } else {
-      let targ = /^([A-Za-z0-9]{1,16})$/;
+      let targ = /^([A-Za-z0-9]{8,16})$/;
       let targ2 = /^\d+$/;
 
       if (targ2.test(value)) {
-        callback(new Error('请输入8-16位字母和数字组合'));
+        callback(new Error('*请输入8-16位字母和数字组合'));
       } else if (!targ.test(value)) {
-        callback(new Error('请输入8-16位字母和数字组合'));
+        callback(new Error('*请输入8-16位字母和数字组合'));
       }
       callback();
     }
@@ -28,19 +28,37 @@ export default class ValidateFactory {
     }
   }
 
-  static password (rule, value, callback) {
-    if (value === '') {
-      callback(new Error('*请输入密码'));
-    } else {
-      callback();
+  static password = {
+    min: 8,
+    max: 20,
+    message: '*密码长度8-20位',
+    fn: (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('*请输入密码'));
+      } else {
+        callback();
+      }
     }
   }
 
-  static identifyCode (rule, value, callback) {
+  static identifyCode4 (rule, value, callback) {
     if (!value) {
       return callback(new Error('*验证码不能为空'));
     } else {
       let targ = /^([A-Za-z0-9]{4})$/;
+      if (!targ.test(value)) {
+        callback(new Error('*请输入正确验证码'));
+      } else {
+        callback();
+      }
+    }
+  }
+
+  static identifyCode6 (rule, value, callback) {
+    if (!value) {
+      return callback(new Error('*验证码不能为空'));
+    } else {
+      let targ = /^([A-Za-z0-9]{6})$/;
       if (!targ.test(value)) {
         callback(new Error('*请输入正确验证码'));
       } else {
@@ -56,6 +74,23 @@ export default class ValidateFactory {
       let targ = /^[a-zA-Z0-9_.-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,4}$/;
       if (!targ.test(value)) {
         callback(new Error('*请输入正确邮箱'));
+      } else {
+        callback();
+      }
+    }
+  }
+
+  static retrieveAccount (rule, value, callback) {
+    if (!value) {
+      return callback(new Error('*此项不能为空'));
+    } else {
+      let targ1 = /^[a-zA-Z0-9_.-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,4}$/;
+      let targ2 = /^([A-Za-z0-9]{8,16})$/;
+      let targ0 = /^\d+$/;
+      if (targ0.test(value)) {
+        callback(new Error('*请输入账号或邮箱'));
+      } else if (!targ1.test(value) && !targ2.test(value)) {
+        callback(new Error('*请输入账号或邮箱'));
       } else {
         callback();
       }

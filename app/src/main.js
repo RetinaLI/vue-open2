@@ -9,14 +9,11 @@ import MetaInfo from 'vue-meta-info';
 import $ from 'jquery';
 import { store } from './stores';
 import 'element-ui/lib/theme-chalk/index.css';
-import ECharts from 'vue-echarts/components/ECharts';
+import ECharts from 'vue-echarts';
 import 'echarts/lib/chart/line';
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
 import 'echarts/lib/component/grid';
-// mavon-editor 解析markdown
-import mavonEditor from 'mavon-editor';
-import 'mavon-editor/dist/css/index.css';
 import '@/lib/directive';
 
 import {
@@ -153,7 +150,6 @@ Vue.use(Main);
 Vue.use(Footer);
 
 Vue.use(Loading.directive);
-Vue.use(mavonEditor);
 
 Vue.prototype.$loading = Loading.service;
 Vue.prototype.$msgbox = MessageBox;

@@ -1,5 +1,7 @@
 {
   "data": {
     "token": "13221321421432kjlkjlk4j2432lk234lkj"
-  }
+  },
+  "code": 1,
+  "msg": "token获取成功"
 }

@@ -2,10 +2,10 @@
   <div>
     <div class="pros">
       <div class="pro" v-for="(value, index) in products" :key="index">
-        <a :href="value.url" target="_blank">
+        <a :href="value.link" target="_blank">
           <h5>{{ value.title }}</h5>
           <div>
-            {{ value.details }}
+            {{ value.content }}
           </div>
         </a>
       </div>
@@ -23,11 +23,12 @@
   </div>
 </template>
 <script>
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 export default {
   name: 'dynamicProducts',
   data () {
     return {
+      apiService: new ApiService(),
       products: [],
       totalCount: 0,
       pageSize: 9,
@@ -47,14 +48,14 @@ export default {
         this.param = p;
       }
       // 获取数据
-      axiosApi('getDynamicProducts', {
+      this.apiService.getDynamicProducts({
         'pageSize': this.pageSize,
-        'page': this.param
+        'pageNum': this.param,
+        'type': 'product'
       })
         .then(res => {
-          console.log(res);
-          this.products = res.data;
-          this.totalCount = res.totalCount;
+          this.products = res.list;
+          this.totalCount = res.count;
           this.curPage = p;
         });
     },
@@ -64,6 +65,9 @@ export default {
       var nUrl = url.split('?page=')[0] + '?page=' + val;
       window.location.href = nUrl;
     }
+  },
+  metaInfo: {
+    title: '产品动态-车联网数据开放平台'
   }
 };
 </script>

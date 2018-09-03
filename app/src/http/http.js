@@ -3,11 +3,20 @@
  */
 
 import axios from 'axios';
-import router from '@/router';
+// import router from '@/router';
+import qs from 'qs';
+import ToastTip from '@/lib/message';
 
 // axios 配置
 
 axios.defaults.timeout = 300000;
+// axios.defaults.headers.post = {};
+// axios.defaults.headers.common = {};
+// axios.defaults.headers.put = {};
+// axios.defaults.headers.patch = {};
+// axios.defaults.headers = {
+//   'Content-type': 'application/x-www-form-urlencoded'
+// };
 // 映射时，后端接口服务器
 // axios.defaults.baseURL = `http://localhost:3000`;
 // http request 拦截器
@@ -16,6 +25,9 @@ axios.interceptors.request.use(
   config => {
     if (token) {
       // config.headers.Authorization = `BasicAuth ${store.state.token}`;
+    }
+    if (config.method === 'post') {
+      config.data = qs.stringify({...config.data});
     }
     return config;
   },
@@ -34,24 +46,26 @@ axios.interceptors.response.use(
   },
   error => {
     if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          // console.log(error.response);
-          // 登录超时, token超时
-          // 401 清除token信息并跳转到登录页面
-          router.replace({
-            name: '/',
-            query: {redirect: router.currentRoute.fullPath}
-          });
-          break;
-        default:
-          // console.log('err-login')
-          /* 普通401拦截直接返回到登录页面 */
-          // store.commit(types.LOGOUT);
-          // router.push('/');
+      if (error.response.status === 401 && document.location.pathname.startsWith('/console/')) {
+        ToastTip.warn('登录信息失效，请重新登录！');
       }
+      // switch (error.response.status) {
+      //   case 401:
+      //     // console.log(error.response);
+      //     // 登录超时, token超时
+      //     // 401 清除token信息并跳转到登录页面
+      //     router.replace({
+      //       name: '/passport/login/index.html',
+      //       query: {redirect: router.currentRoute.fullPath}
+      //     });
+      //     break;
+      //   default:
+      //   // console.log('err-login')
+      //   /* 普通401拦截直接返回到登录页面 */
+      //   // store.commit(types.LOGOUT);
+      //   // router.push('/');
+      // }
     }
-    // console.log(JSON.stringify(error));//console : Error: Request failed with status code 402
     return Promise.reject(error.response.data);
   });
 

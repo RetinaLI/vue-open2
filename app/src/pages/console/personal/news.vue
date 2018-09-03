@@ -38,7 +38,7 @@ export default {
         nav: [
           {
             title: '个人中心',
-            path: '/console/info'
+            path: '/console/info/index.html'
           }
         ],
         current: '我的消息'
@@ -68,7 +68,7 @@ export default {
     // ]),
     pageChangeHandle (val) {
       // 将路由跳转到对应id的知识点
-      this.$router.push({path: '/console/news', query: {page: val}});
+      this.$router.push({path: '/console/news/index.html', query: {page: val}});
     }
   },
   mounted: function () {

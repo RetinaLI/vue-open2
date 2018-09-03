@@ -49,13 +49,16 @@ import ConBlock from '@/components/console/con-block/con-block';
 
 export default {
   name: 'Detail',
+  mateInfo: {
+    title: '控制台-我的数据详情'
+  },
   data () {
     return {
       crumbs: {
         nav: [
           {
             title: '我的数据',
-            path: '/console/data'
+            path: '/console/data/index.html'
           }
         ],
         current: '接口名称-接口调用详情'

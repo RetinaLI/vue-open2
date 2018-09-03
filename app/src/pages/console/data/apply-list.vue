@@ -1,8 +1,8 @@
 <template>
   <div class="apply-list">
     <div class="t">
-      <el-tabs v-model="statusType" type="card" class="el-tabs" @tab-click="handleTypeClick">
-        <el-tab-pane v-for="(item, i) in statusTypes" :key="i" :label="item.name" :name="item.type"></el-tab-pane>
+      <el-tabs v-model="tabModel" type="card" class="el-tabs" @tab-click="handleTypeClick">
+        <el-tab-pane v-for="(item, i) in statusTypes" :key="i" :label="item.name" :name="item.name"></el-tab-pane>
       </el-tabs>
       <div class="search">
         <input type="text" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
@@ -12,7 +12,7 @@
     <el-table stripe :data="tableData" class="my-table">
       <el-table-column type="index" :width="WITH_LESS_2_WORDS" label="序号" align="center">
       </el-table-column>
-      <el-table-column prop="name" :min-width="WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="数据接口名称" align="left">
+      <el-table-column prop="apiType.name" :min-width="WITH_WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="数据接口名称" align="left">
         <template slot-scope="scope">
           <p>{{ scope.row.name }}</p>
         </template>
@@ -22,10 +22,16 @@
           <p>单次调用{{ scope.row.price }}元/每月上限{{ scope.row.limit }}元</p>
         </template>
       </el-table-column>
-      <el-table-column :width="WITH_LESS_2_WORDS" align="center" label="操作">
+      <el-table-column :width="WITH_LESS_8_WORDS" align="center" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" :round="true" size="mini" @click="handleTableClick(scope.row)" class="el-button" align="center">
-            申请
+          <el-button v-if="scope.row.applyStatus === 0" type="primary" :round="true" size="mini" class="el-button" disabled align="center">
+            审核中
+          </el-button>
+          <el-button v-else-if="scope.row.applyStatus === 1" type="primary" :round="true" size="mini" @click="handleTableCheckClick(scope.row)" class="el-button" align="center">
+            查看
+          </el-button>
+          <el-button v-else type="success" :round="true" size="mini" @click="handleApplyDataClick(scope.row)" class="el-button" align="center">
+            {{ clickedText }}
           </el-button>
         </template>
       </el-table-column>
@@ -38,9 +44,11 @@
 </template>
 
 <script>
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 import ToastTip from '@/lib/message.js';
 import cellWidth from '@/lib/cellWidth.js';
+import common from '@/lib/common.js';
+
 export default {
   name: 'ConData',
   created () {
@@ -53,7 +61,23 @@ export default {
   data () {
     return {
       ...cellWidth,
-      statusType: 'ing',
+      apiService: new ApiService(),
+      tabModel: '未申请',
+      statusId: 2,
+      statusTypes: [
+        {
+          name: '未申请',
+          id: 2
+        },
+        {
+          name: '审核中',
+          id: 0
+        },
+        {
+          name: '已申请',
+          id: 1
+        }
+      ],
       keywords: '',
       pagination: {
         totalCount: 0,
@@ -61,40 +85,36 @@ export default {
         // curPage用于分页器当前页
         curPage: 1
       },
-      statusTypes: [
-        {
-          name: '申请中',
-          type: 'ing'
-        },
-        {
-          name: '已开通',
-          type: 'ed'
-        },
-        {
-          name: '未开通',
-          type: 'not'
-        }
-      ],
       tableData: [],
-      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作']
+      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作'],
+      clickedText: '申请'
     };
   },
   methods: {
-    handleTableClick (row) {
-      ToastTip.info('暂无申请页面');
-      // this.$router.push({path: '/console/data/detail/', query: {id: row.id}});
+    handleTableCheckClick (row) {
+      this.$router.push({ path: '/console/data/detail/index.html', query: { id: row.id } });
     },
-    getData () {
-      axiosApi('getInterfaces', {
+    handleApplyDataClick (row) {
+      let confirm = ToastTip.confirm({
+        content: `您将购买数据接口“${row.name}”`
+      });
+      confirm.then(() => {
+        this.apiService.applyData({id: row.id}).then(res => {
+          common.requestMsgHandler(res);
+          if (res.code === 1) row.applyStatus = 0;
+        }).catch(() => { });
+      }).catch(() => {});
+    },
+    async getData () {
+      let res = await this.apiService.getListAudit({
+        'apiTypeId': '',
         'pageSize': this.pagination.pageSize,
-        'page': this.pagination.curPage,
-        'type': this.statusType,
-        'keywords': this.enCodeURIKeywords
-      })
-        .then(res => {
-          this.tableData = res.data;
-          this.pagination.totalCount = res.totalCount;
-        });
+        'pageNum': this.pagination.curPage,
+        'name': this.enCodeURIKeywords,
+        'auditStats': this.statusId
+      });
+      this.tableData = res.list;
+      this.pagination.totalCount = res.count || res.totalCount;
     },
     handleCurrentChange (val) {
       // 点击分页跳转
@@ -104,12 +124,21 @@ export default {
     },
     handleSearch () {
       if (this.pagination.curPage !== 1) this.pagination.curPage = 1;
-      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage });
+      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage + '&name=' + this.enCodeURIKeywords });
     },
-    handleTypeClick (el) {
+    handleTypeClick (pane) {
+      // 重置分类
+      let paneName = pane.paneName;
+      this.statusTypes.forEach(v => {
+        if (v.name === paneName) this.statusId = v.id;
+      });
+      // 重置keywords
       this.keywords = '';
+      // 重置page
       if (this.pagination.curPage !== 1) this.pagination.curPage = 1;
-      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage });
+      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage + '&auditStats=' + this.statusId });
+      // 这里不需要手动从新获取数据，因为监听了路由
+      // this.getData();
     }
   },
   computed: {
@@ -119,10 +148,16 @@ export default {
   },
   watch: {
     '$route': 'getData'
+  },
+  metaInfo: {
+    title: '控制台-申请数据'
   }
 };
 </script>
 <style scoped lang="scss">
+.none {
+  display: none !important;
+}
 .apply-list {
   min-width: 840px;
   min-height: 100%;
@@ -138,9 +173,8 @@ export default {
       text-align: center;
     }
     .search {
-      display: none;
       position: absolute;
-      top: 100px;
+      top: 20px;
       right: 30px;
       width: 50px;
       transition: width 0.3s 0.3s;

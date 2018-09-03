@@ -1,6 +1,6 @@
 <template>
   <div class="con-nav">
-    <a href="/">
+    <a href="/index.html">
       <h1 class="con-logo">
         <img :src="logo" alt="" class="con-nav-logo">
         <span class="con-nav-title">数据开放平台</span>
@@ -11,26 +11,26 @@
       :defaultActive="getPath"
       textColor="#ccc"
     >
-      <el-menu-item index="/console">
+      <!-- <el-menu-item index="/console/index.html">
         <i class="icon icon-look"></i>
         数据看板
-      </el-menu-item>
-      <el-submenu index="/console/data">
+      </el-menu-item> -->
+      <el-submenu index="/console/data/index.html">
         <template slot="title">
           <i class="icon icon-data"></i>
           数据中心
         </template>
-        <el-menu-item index="/console/data">我的数据</el-menu-item>
-        <el-menu-item index="/console/apply_list">申请数据</el-menu-item>
+        <el-menu-item index="/console/data/index.html">我的数据</el-menu-item>
+        <el-menu-item index="/console/apply_list/index.html">申请数据</el-menu-item>
       </el-submenu>
-      <el-submenu index="/console/info">
+      <el-submenu index="/console/info/index.html">
         <template slot="title">
           <i class="icon icon-info"></i>
           个人中心
         </template>
-        <el-menu-item index="/console/info">账号信息</el-menu-item>
-        <el-menu-item index="/console/auth">实名认证</el-menu-item>
-        <el-menu-item index="/console/balance">我的余额</el-menu-item>
+        <el-menu-item index="/console/info/index.html">账号信息</el-menu-item>
+        <el-menu-item index="/console/auth/index.html">实名认证</el-menu-item>
+        <!--<el-menu-item index="/console/balance/index.html">我的余额</el-menu-item>-->
       </el-submenu>
     </el-menu>
   </div>
@@ -48,8 +48,8 @@ export default {
   },
   computed: {
     getPath () {
-      if (this.$route.path === '/console/pay') {
-        return '/console/balance';
+      if (this.$route.path === '/console/pay/index.html') {
+        return '/console/balance/index.html';
       } else {
         return this.$route.path;
       }

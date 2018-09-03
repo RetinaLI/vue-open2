@@ -1,8 +1,8 @@
 <template>
   <div class="data">
     <div class="t">
-      <el-tabs v-model="apiType" type="card" class="el-tabs" @tab-click="handleTypeClick">
-        <el-tab-pane v-for="(item, i) in apiTypes" :key="i" :label="item.name" :name="item.type"></el-tab-pane>
+      <el-tabs v-model="tabsModel" type="card" class="el-tabs" @tab-click="handleTypeClick">
+        <el-tab-pane v-for="(item, i) in apiTypes" :key="i" :label="item.name" :name="'type'+item.id"></el-tab-pane>
       </el-tabs>
       <div class="search">
         <input type="text" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
@@ -12,29 +12,31 @@
     <el-table stripe :data="tableData" class="my-table">
       <el-table-column type="index" :width="WITH_LESS_2_WORDS" label="序号" align="center">
       </el-table-column>
-      <el-table-column prop="name" :min-width="WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="数据接口名称">
+      <el-table-column prop="name" :min-width="WITH_WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="数据接口名称">
         <template slot-scope="scope">
           <el-tooltip :content="scope.row.name" placement="bottom" effect="light">
             <p>{{ scope.row.name }}</p>
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column prop="url" :min-width="WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="接口地址">
+      <el-table-column prop="requestUrl" :min-width="WITH_WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="接口地址">
         <template slot-scope="scope">
-          <el-tooltip :content="scope.row.url" placement="bottom" effect="light">
-            <p>{{ scope.row.url }}</p>
+          <el-tooltip :content="scope.row.requestUrl" placement="bottom" effect="light">
+            <p>{{ scope.row.requestUrl }}</p>
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column prop="price" :width="WITH_LESS_8_WORDS" label="调用单价（元/次）">
       </el-table-column>
-      <el-table-column prop="useCount" :width="WITH_LESS_8_WORDS" label="已调用次数">
+      <el-table-column prop="frequency" :width="WITH_LESS_8_WORDS" label="已调用次数">
       </el-table-column>
-      <el-table-column prop="amount" :width="WITH_LESS_8_WORDS" label="已消费金额（元）">
+      <el-table-column prop="consumptionAmount" :width="WITH_LESS_8_WORDS" label="已消费金额（元）">
       </el-table-column>
-      <el-table-column :width="WITH_LESS_2_WORDS" align="center" label="操作">
+      <el-table-column :width="WITH_LESS_8_WORDS" align="center" label="操作">
         <template slot-scope="scope">
-          <span @click="handleTableClick(scope.row)" class="jump">查看</span>
+          <el-button type="primary" :round="true" size="mini" @click="handleTableClick(scope.row)" class="jump el-button"  align="center">
+            查看
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,21 +48,18 @@
 </template>
 
 <script>
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 import cellWidth from '@/lib/cellWidth.js';
 export default {
   name: 'ConData',
   created () {
-    let p = Number(this.$route.query.page);
-    if (p) {
-      this.pagination.curPage = p;
-    }
-    this.getData();
+    this.getListApiType();
   },
   data () {
     return {
       ...cellWidth,
-      apiType: 'car1',
+      apiService: new ApiService(),
+      tabsModel: '',
       keywords: '',
       pagination: {
         totalCount: 0,
@@ -68,38 +67,44 @@ export default {
         // curPage用于分页器当前页
         curPage: 1
       },
-      apiTypes: [
-        {
-          name: '车辆运行数据',
-          type: 'car1'
-        },
-        {
-          name: '车辆数据分析',
-          type: 'car2'
-        },
-        {
-          name: '车主服务数据',
-          type: 'car3'
-        }
-      ],
+      apiTypes: [],
       tableData: [],
       columns: ['数据接口名称', '接口地址', '调用单价（元/次）', '已调用次数', '已消费金额（元）', '操作']
     };
   },
   methods: {
     handleTableClick (row) {
-      this.$router.push({path: '/console/data/detail/', query: {id: row.id}});
+      this.$router.push({ path: '/console/data/detail/index.html', query: { id: row.id } });
+    },
+    getListApiType () {
+      this.apiService.getListApiType().then(res => {
+        if (!res || res.length === 0) return false;
+        this.apiTypes = res;
+        let p = Number(this.$route.query.page);
+        let t = Number(this.$route.query.apiType);
+        if (p) this.pagination.curPage = p;
+        if (t) {
+          this.apiType = t;
+          this.tabsModel = 'type' + t;
+        } else {
+          this.apiType = res[0].id;
+          this.tabsModel = 'type' + res[0].id;
+        }
+        this.getData();
+      });
     },
     getData () {
-      axiosApi('getInterfaces', {
+      this.apiService.getApiSubscibe({
+        'status': 1,
         'pageSize': this.pagination.pageSize,
-        'page': this.pagination.curPage,
-        'type': this.apiType,
-        'keywords': this.enCodeURIKeywords
+        'pageNum': this.pagination.curPage,
+        'apiTypeId': this.apiType,
+        'name': this.enCodeURIKeywords
       })
         .then(res => {
-          this.tableData = res.data;
-          this.pagination.totalCount = res.totalCount;
+          this.tableData = res.list;
+          this.pagination.totalCount = res.totalCount || res.count;
+          this.keywords = '';
         });
     },
     handleCurrentChange (val) {
@@ -110,12 +115,20 @@ export default {
     },
     handleSearch () {
       if (this.pagination.curPage !== 1) this.pagination.curPage = 1;
-      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage });
+      this.$router.push({path: this.$route.path + '?page=' + this.pagination.curPage + '&name=' + this.enCodeURIKeywords});
     },
-    handleTypeClick (el) {
+    handleTypeClick (pane) {
+      console.log(pane);
+      // 重置分类
+      let paneName = pane.paneName;
+      this.apiType = parseInt(paneName.split('type')[1]);
+      // 重置keywords
       this.keywords = '';
+      // 重置page
       if (this.pagination.curPage !== 1) this.pagination.curPage = 1;
-      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage });
+      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage + '&apiType=' + this.apiType });
+      // 这里不需要手动从新获取数据，因为监听了路由
+      // this.getData();
     }
   },
   computed: {
@@ -125,6 +138,9 @@ export default {
   },
   watch: {
     '$route': 'getData'
+  },
+  metaInfo: {
+    title: '控制台-我的数据'
   }
 };
 </script>
@@ -145,7 +161,7 @@ export default {
     }
     .search {
       position: absolute;
-      top: 100px;
+      top: 20px;
       right: 30px;
       width: 50px;
       transition: width 0.3s 0.3s;
@@ -169,10 +185,9 @@ export default {
       }
     }
   }
-  .jump {
-    font-size: 14px;
-    color: #0099cc;
-    cursor: pointer;
+  .jump /deep/ span {
+    font-size: 14px !important;
+    color: #fff;
   }
   .block {
     margin: 20px 0;

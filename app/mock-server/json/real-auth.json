@@ -1,9 +1,13 @@
 {
+  "code": 1,
+  "msg": "获取成功",
   "data": {
-    "companyName": "福田车联网平台",
-    "companyCode": "kjslkfjds1321314324324dsffdssddsfdsfd",
-    "companyImg": "http://localhost:8081/public/img/zfb.png",
-    "user": "谁谁谁",
-    "tel": "13222222432"
+    "id": 213,
+    "enterprise": "福田车联网平台",
+    "uscc": "kjslkfjds1321314324324dsffdssddsfdsfd",
+    "businessLicense": "http://localhost:8081/public/img/zfb.png",
+    "operator": "谁谁谁",
+    "mobile": "13222222432",
+    "authStatus": 3
   }
 }

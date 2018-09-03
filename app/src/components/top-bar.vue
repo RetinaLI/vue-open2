@@ -18,19 +18,19 @@
           text-color="#fff"
           background-color="transparent">
           <el-menu-item class="menu-item item0" index="/">
-            <a href="/">首页</a>
+            <a href="/index.html">首页</a>
           </el-menu-item>
           <el-menu-item class="menu-item item1" index="service">
-            <a href="/service">数据服务</a>
+            <a href="/service/index.html">数据服务</a>
           </el-menu-item>
           <el-menu-item class="menu-item item2" index="products">
-            <a href="/products">车联网产品</a>
+            <a href="/products/index.html">车联网产品</a>
           </el-menu-item>
           <el-menu-item class="menu-item item3" index="solution">
-            <a href="/solution">解决方案</a>
+            <a href="/solution/index.html">解决方案</a>
           </el-menu-item>
           <el-menu-item class="menu-item item4" index="dynamic">
-            <a href="/dynamic/industry">行业&amp;产品动态</a>
+            <a href="/dynamic/industry/index.html">行业&amp;产品动态</a>
           </el-menu-item>
           <div class="border"></div>
         </el-menu>
@@ -38,30 +38,33 @@
     </div>
     <div class="operation clearfix">
       <div>
-        <a href="/console" tag="span" class="ctrl">控制台</a>
-        <div v-if="!login" class="logins">
-          <a href="/passport" tag="div" class="login" index="login">
+        <a href="/console/index.html" tag="span" class="ctrl">控制台</a>
+        <div v-if="!getCurrentUser.name" class="logins">
+          <a tag="div" class="login" index="login" @click="toLogin">
             登录
           </a>
-          <a href="/passport/regist" tag="div" class="regist" index="regist">
+          <a href="/passport/regist/index.html" tag="div" class="regist" index="regist">
             注册
           </a>
         </div>
         <LoginUserTitle :isIndex="Boolean(true)" v-else/>
       </div>
-      <router-link to="/" tag="div" class="login-clw">
+      <router-link to="/index.html" tag="div" class="login-clw">
         登录车联网平台
       </router-link>
     </div>
   </div>
 </template>
 <script>
-// import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import LoginUserTitle from '@/components/login-user-title';
+import { PassportService } from '@/services/passport';
+
 export default {
   name: 'top-bar',
   data () {
     return {
+      passportService: new PassportService(),
       activeIndex: '/',
       isRouter: true,
       menus: {
@@ -71,16 +74,15 @@ export default {
         'products': 2,
         'cars': 2,
         'solution': 3,
-        'dynamicIndustry': 4,
-        'dynamicProducts': 4,
-        'dynamicIndustryDetail': 4,
-        'dynamicProductsDetail': 4
+        'dynamic': 4
       },
       login: false
     };
   },
   computed: {
-    // ...mapState(['currentUser'])
+    ...mapGetters([
+      'getCurrentUser'
+    ])
   },
   mounted () {
     this.initBorderPos();
@@ -92,13 +94,16 @@ export default {
       let n = 0;
       let menus = this.menus;
       for (let x in menus) {
-        if (p === x) {
+        if (p.indexOf(x) > -1) {
           n = menus[x];
           break;
         }
       }
       $('.top-bar .border').removeClass('pos0 pos1 pos2 pos3 pos4').addClass('pos' + n);
       if (n === 4 || n === 1) $('.top-bar .border').css('backgroundColor', '#fff');
+    },
+    toLogin () {
+      this.passportService.redirectToLogin();
     }
   },
   watch: {
@@ -194,17 +199,14 @@ export default {
           border: 1px solid #fff;
         }
         &.regist{
-          position: relative;
-          margin-left:2px;
           &::before{
             content: '';
             width: 1px;
             height: 14px;
             background: #fff;
-            right: 35px;
             display: inline-block;
-            position: absolute;
-            top: 3px;
+            vertical-align: middle;
+            margin-right: 6px;
           }
         }
       }

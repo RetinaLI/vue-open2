@@ -111,6 +111,9 @@ export default {
   },
   components: {
     Banner
+  },
+  metaInfo: {
+    title: '解决方案-车联网数据开放平台'
   }
 };
 </script>

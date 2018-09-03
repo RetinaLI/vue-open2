@@ -6,7 +6,7 @@ export class BalanceService {
     return result.data;
   }
 
-  async getTabPay (page = {}) {
+  async getTabPay (page) {
     return axiosApi('getBalanceTabPay', page);
   }
 

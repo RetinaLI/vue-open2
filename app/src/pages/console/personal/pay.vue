@@ -51,7 +51,7 @@
                      :class="{'is-payed': pay.isPay}"
                      :key="i" v-for="(pay, i) in pays">
                   <i class="con-pay-way-btn-icon btn-icon1" :class="`btn-icon${i + 1}`"></i>
-                  <span>{{pay.way}}</span>
+                  <span>{{pay.way.name}}</span>
                 </div>
                 <!--<div class="con-pay-btn con-pay-way-btn">-->
                 <!--<i class="con-pay-way-btn-icon btn-icon2"></i>-->
@@ -60,7 +60,7 @@
               </div>
               <div class="con-pay-code" v-if="!payed">
                 <img :src="codeImg" alt="">
-                <p>请使用{{way}}扫一扫，扫描二维码支付</p>
+                <p>请使用{{way.name}}扫一扫，扫描二维码支付</p>
                 <p>请尽快完成支付，超时订单将自动取消。</p>
               </div>
             </el-form-item>
@@ -69,7 +69,8 @@
                 type="primary"
                 class="con-pay-btn"
                 v-show="payed"
-                @click="onSubmit('ruleForm')">立即支付</el-button>
+                @click="onSubmit('ruleForm')">立即支付
+              </el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -117,8 +118,13 @@
 import ToastTip from '@/lib/message';
 import ConBreadCrumbs from '@/components/console/con-bread-crumbs/index';
 import codeImg from '@/assets/images/balance/zfb.png';
+import payService from '@/services/pay';
+
 export default {
   name: 'Pay',
+  metaInfo: {
+    title: '控制台-充值'
+  },
   data () {
     let checkNum = (rule, value, callback) => {
       console.log(value);
@@ -133,7 +139,7 @@ export default {
         nav: [
           {
             title: '我的余额',
-            path: '/console/balance'
+            path: '/console/balance/index.html'
           }
         ],
         current: '充值'
@@ -172,12 +178,18 @@ export default {
       ],
       pays: [
         {
-          way: '支付宝',
+          way: {
+            name: '支付宝',
+            arg: 'ALIPAY'
+          },
           isPay: false,
           isPayed: true
         },
         {
-          way: '微信',
+          way: {
+            name: '微信',
+            arg: 'WEIXIN'
+          },
           isPay: false,
           isPayed: true
         }
@@ -195,26 +207,35 @@ export default {
   },
   computed: {
     checkPayMoney () {
-      return !Number.isInteger(Number(this.ruleForm.payMoney)) || Number(this.ruleForm.payMoney) <= 0 ? '' : this.ruleForm.payMoney;
+      return !Number.isInteger(Number(this.ruleForm.payMoney)) || Number(this.ruleForm.payMoney) <= 0
+        ? ''
+        : this.ruleForm.payMoney;
     }
   },
   methods: {
-    onSubmit (formName) {
+    async onSubmit (formName) {
       if (!this.checkPayMoney) {
-        ToastTip.warn('请选择充值金额');
+        ToastTip.error('请选择充值金额');
         return false;
       }
       if (!this.way) {
-        ToastTip.warn('请选择支付方式');
+        ToastTip.error('请选择支付方式');
         return false;
       }
-
-      console.log(`submit:充值金额${parseInt(this.ruleForm.payMoney)}元，充值方式${this.way}`);
-      // 显示支付方式
-      this.pays.map(ele => {
-        ele.isPayed = ele.way === this.way ? Boolean(true) : Boolean(false);
+      // console.log(`submit:充值金额${parseInt(this.ruleForm.payMoney)}元，充值方式${this.way}`);
+      let code = await payService.goPay({
+        orderPrice: this.ruleForm.payMoney,
+        payWayType: this.way.arg
       });
-      this.payed = false;
+      if (code) {
+        // 显示支付方式
+        this.pays.map(ele => {
+          ele.isPayed = ele.way === this.way ? Boolean(true) : Boolean(false);
+        });
+        this.payed = false;
+      } else {
+        ToastTip.error('支付失败！');
+      }
     },
     changePayMoney (item) {
       this.isCustom = false;
@@ -259,10 +280,12 @@ export default {
       }
     }
   }
+
   .con-pay-auto {
     width: 600px;
     margin: 0 auto;
   }
+
   .con-pay-form {
     padding: 30px 0 0 50px;
     .con-pay-btn {
@@ -381,6 +404,7 @@ export default {
       border-color: #409EFF !important;
     }
   }
+
   .con-pay-info {
     border-top: 1px solid #eee;
     padding: 15px 30px 0;
@@ -396,6 +420,7 @@ export default {
       line-height: 18px;
     }
   }
+
   .con-paid {
     .con-paid-type {
       padding: 50px 0;
@@ -403,7 +428,7 @@ export default {
       &.is-err {
         i {
           background: #F56C6C;
-          border:4px solid rgba(245, 108, 108, 0.15);
+          border: 4px solid rgba(245, 108, 108, 0.15);
           &:before {
             background: url($cuo) no-repeat;
             background-size: 100% 100%;
@@ -413,7 +438,7 @@ export default {
       &.is-success {
         i {
           background: rgba(27, 205, 147, 1);
-          border:4px solid rgba(27, 205, 147, 0.15);
+          border: 4px solid rgba(27, 205, 147, 0.15);
           &:before {
             background: url($dui) no-repeat;
             background-size: 100% 100%;
@@ -446,9 +471,9 @@ export default {
       width: 460px;
       margin: 0 auto;
       .con-paid-info-title {
-        font-size:14px;
+        font-size: 14px;
         color: #aaa;
-        line-height:20px;
+        line-height: 20px;
         margin-bottom: 15px;
       }
       .con-paid-table {

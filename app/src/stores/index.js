@@ -15,12 +15,15 @@ let profileService = new ProfileService();
 
 export const STORE_MUTATION_MAP = {
   UPDATE_CURRENT_USER: 'UPDATE_CURRENT_USER',
-  UPDATE_VALID_MENUS: 'UPDATE_VALID_MENUS'
+  UPDATE_VALID_MENUS: 'UPDATE_VALID_MENUS',
+  UPDATE_EMAIL: 'UPDATE_EMAIL',
+  UPDATE_HEADIMG: 'UPDATE_HEADIMG',
+  UPDATE_NAME: 'UPDATE_NAME'
 };
 
 export const store = new Vuex.Store({
   state: {
-    currentUser: null,
+    currentUser: {},
     news: { // 我的消息
       total: 0,
       data: []
@@ -45,7 +48,7 @@ export const store = new Vuex.Store({
     // 只用于异步/请求
     async initCurrentUser ({commit, state}) {
       let user = await profileService.getCurrentUser();
-      if (user.id) {
+      if (user.name) {
         commit(STORE_MUTATION_MAP.UPDATE_CURRENT_USER, user);
       }
     },
@@ -61,6 +64,15 @@ export const store = new Vuex.Store({
     // },
     [STORE_MUTATION_MAP.UPDATE_CURRENT_USER] (state, user) {
       state.currentUser = { ...state.currentUser, ...user };
+    },
+    [STORE_MUTATION_MAP.UPDATE_EMAIL] (state, email) {
+      state.currentUser.email = email;
+    },
+    [STORE_MUTATION_MAP.UPDATE_NAME] (state, name) {
+      state.currentUser.name = name;
+    },
+    [STORE_MUTATION_MAP.UPDATE_HEADIMG] (state, img) {
+      state.currentUser.headImageUrl = img;
     },
     // 我的消息state
     [types.NEWS] (state, news) {

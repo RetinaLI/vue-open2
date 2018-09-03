@@ -7,8 +7,12 @@ function check_result(){
   fi
 }
 
+rm -rf dist/*;
+
 npm run build;
 check_result $?;
+
+cp -rf src/40* src/500.html dist/;
 
 rm -rf /data/projects/foton/iov-web-api/src/*;
 check_result $?;

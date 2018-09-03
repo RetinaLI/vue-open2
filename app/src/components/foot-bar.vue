@@ -6,17 +6,17 @@
       <div class="content clearfix">
         <div class="item">
           <h5>快速入口</h5>
-          <p><a href="/service">数据服务</a></p>
-          <p><a href="/dynamic/industry">产品&amp;行业动态</a></p>
+          <p><a href="/service/index.html">数据服务</a></p>
+          <p><a href="/dynamic/industry/index.html">产品&amp;行业动态</a></p>
           <!-- <p>联系我们</p> -->
         </div>
         <div class="item">
           <h5>车联网产品</h5>
-          <p><a href="/cars/truck">中重卡车联网平台</a></p>
-          <p><a href="/cars/energy">新能源车联网平台</a></p>
-          <p><a href="/cars/mechanics">工程机械车联网平台</a></p>
-          <p><a href="/cars/bus">客车车联网平台</a></p>
-          <p><a href="/cars/passenger">乘用车车联网平台</a></p>
+          <p><a href="/cars/truck/index.html">中重卡车联网平台</a></p>
+          <p><a href="/cars/energy/index.html">新能源车联网平台</a></p>
+          <p><a href="/cars/mechanics/index.html">工程机械车联网平台</a></p>
+          <p><a href="/cars/bus/index.html">客车车联网平台</a></p>
+          <p><a href="/cars/passenger/index.html">乘用车车联网平台</a></p>
         </div>
         <div class="item">
           <h5>解决方案</h5>

@@ -37,31 +37,31 @@ export default {
           title: '中重卡',
           txt: ['位置服务', '油耗分析', '驾驶行为', '载重检测'],
           img: require('project-assets/images/product/car1.png'),
-          href: 'cars/truck'
+          href: 'cars/truck/index.html'
         },
         {
           title: '新能源',
           txt: ['电池监控', '运行分析', '实时故障处理', '图标数据对接'],
           img: require('project-assets/images/product/car2.png'),
-          href: 'cars/energy'
+          href: 'cars/energy/index.html'
         },
         {
           title: '工程机械',
           txt: ['主动服务', '工况分析', '远程配置', '作业监控'],
           img: require('project-assets/images/product/car3.png'),
-          href: 'cars/mechanics'
+          href: 'cars/mechanics/index.html'
         },
         {
           title: '客车',
           txt: ['视频监控', '运营调度', '疲劳监测', '运营分析'],
           img: require('project-assets/images/product/car4.png'),
-          href: 'cars/bus'
+          href: 'cars/bus/index.html'
         },
         {
           title: '乘用车',
           txt: ['远程控制', '影音娱乐', '故障诊断', '远程升级'],
           img: require('project-assets/images/product/car5.png'),
-          href: 'cars/passenger'
+          href: 'cars/passenger/index.html'
         }
       ]
     };

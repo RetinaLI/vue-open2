@@ -1,6 +1,7 @@
 <template>
   <p class="con-info-part-title">
     <span>{{title}}</span>
+    <span class="title-auth" :class="info[parseInt(showAuth.authStatus)]" v-if="showAuth.bool">{{auth[parseInt(showAuth.authStatus)]}}</span>
     <el-button
       v-if="isShow"
       type="text danger"
@@ -12,12 +13,39 @@
 </template>
 
 <script>
+const AUTH = [
+  '申请中...',
+  '审核成功',
+  '审核失败',
+  '未申请认证'
+];
+const INFO = [
+  'info',
+  'success',
+  'err',
+  'gray'
+];
 export default {
   name: 'ConInfoTitle',
+  data () {
+    return {
+      auth: AUTH,
+      info: INFO
+    };
+  },
   props: {
     changeInfo: {
       type: Object,
       default: () => {}
+    },
+    showAuth: {
+      type: Object,
+      default: () => {
+        return {
+          bool: false,
+          authStatus: '3'
+        };
+      }
     },
     title: {
       type: String,
@@ -37,7 +65,6 @@ export default {
       if (this.changeInfo.changed) {
         return false;
       }
-      console.log(2);
       this.$emit('changeInfoHandle');
     }
   }
@@ -61,6 +88,22 @@ export default {
     margin: 20px 0;
     border-bottom: 1px solid #eee;
     position: relative;
+    .title-auth {
+      font-size: 12px;
+      margin-left: 10px;
+      &.gray {
+        color: #909399;
+      }
+      &.success {
+        color: #67C23A;
+      }
+      &.err {
+        color: #F56C6C;
+      }
+      &.info {
+        color: #409EFF;
+      }
+    }
     &:before {
       content: '';
       width: 4px;

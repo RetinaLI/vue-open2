@@ -2,33 +2,30 @@
   <div>
     <div class="box">
       <div v-for="(item, index) in industry" :key="index">
-        <a :href="item.url" target="_blank">
-          <img :src="item.poster" alt="">
+        <a :href="item.link" target="_blank">
+          <div class="img">
+            <img class="vhc" :src="item.photoPath" alt="">
+          </div>
           <div>
             <h5 :class="{'text-overflow-multi': item.title.length >= 34 }">{{ item.title }}</h5>
-            <p>{{ item.date }}</p>
+            <p>{{ item.created }}</p>
           </div>
         </a>
       </div>
     </div>
     <div class="block">
-      <el-pagination
-        background
-        @current-change="handleCurrentChange"
-        :current-page.sync="curPage"
-        :page-size="pageSize"
-        layout="prev, pager, next"
-        :total="totalCount">
+      <el-pagination background @current-change="handleCurrentChange" :current-page.sync="curPage" :page-size="pageSize" layout="prev, pager, next" :total="totalCount">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
-import axiosApi from '@/http/axiosApi';
+import { ApiService } from '@/services/api.js';
 export default {
   name: 'dynamicIndustry',
   data () {
     return {
+      apiService: new ApiService(),
       industry: [],
       totalCount: 0,
       pageSize: 9,
@@ -49,14 +46,14 @@ export default {
         this.param = p;
       }
       // 获取数据
-      axiosApi('getDynamicIndustry', {
+      this.apiService.getDynamicIndustry({
         'pageSize': this.pageSize,
-        'page': this.param
+        'pageNum': this.param,
+        'type': 'industry'
       })
         .then(res => {
-          console.log(res);
-          this.industry = res.data;
-          this.totalCount = res.totalCount;
+          this.industry = res.list;
+          this.totalCount = res.count;
           this.curPage = p;
         });
     },
@@ -66,6 +63,9 @@ export default {
       var nUrl = url.split('?page=')[0] + '?page=' + val;
       window.location.href = nUrl;
     }
+  },
+  metaInfo: {
+    title: '行业动态-车联网数据开放平台'
   }
 };
 </script>
@@ -73,17 +73,39 @@ export default {
 .box {
   margin-top: 38px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
-  &>div {
-    margin-bottom: 20px;
+  & > div {
+    margin: 10px 6px;
     width: 380px;
     height: 374px;
     border: 1px solid #eee;
     background-color: #fff;
     &:hover {
-      box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.1);
+      box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.1);
+    }
+    & .img {
+      position: relative;
+      width: 380px;
+      height: 252px;
+      overflow: hidden;
+      img {
+        min-width: 380px;
+        min-height: 252px;
+        position: relative;
+        &::after {
+          content: "";
+          display: block;
+          position: absolute;
+          z-index: 2;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #eee;
+        }
+      }
     }
     & a div {
       padding: 14px;

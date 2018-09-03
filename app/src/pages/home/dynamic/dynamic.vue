@@ -3,8 +3,8 @@
     <navbg></navbg>
     <div class="content">
       <div class="tab">
-        <a class="ind" ref="industry" href="/dynamic/industry">行业动态</a>
-        <a class="pro" ref="products" href="/dynamic/products">产品动态</a>
+        <a class="ind" ref="industry" href="/dynamic/industry/index.html">行业动态</a>
+        <a class="pro" ref="products" href="/dynamic/products/index.html">产品动态</a>
         <p ref="border" class="border"></p>
       </div>
       <router-view/>

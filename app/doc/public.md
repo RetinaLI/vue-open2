@@ -29,11 +29,19 @@
 
 # 公用组件
 
-1.mavon-editor markdown编辑器
-  + npm install 安装
-  + 已在main.js 中全局引用，安装后直接使用
-  + 参考 https://github.com/hinesboy/mavonEditor
+1.editor.md markdown编辑器
+  + 文件放在了 /src/lib/editor/
+  + 用法参见 /src/pages/home/serviceDetail  8行 92行
+  + 参考 https://pandao.github.io/editor.md/
   + 参考 serviceDetail 第9行
   + my-markdown-editor 类 去自带的背景色和阴影
 
 # 公用方法
+
+1.requestMsgHandler 用于请求结果成功/失败的提示信息
+  + 位于lib/common 内
+  + 第一个参数请求返回的 result, 方法内部通过res.code 判断成功失败, 必填
+  + 第二参数obj, 字段不可更改, 可选, 如
+    ```
+    common.requestMsgHandler(result, {successMsg: '哈哈，成功了', errorMsg: 'oh no！失败了'});
+    ```

@@ -1,11 +1,11 @@
 <template>
   <div class="con-nav">
-    <a href="/index.html">
+    <router-link to="/index.html">
       <h1 class="con-logo">
         <img :src="logo" alt="" class="con-nav-logo">
         <span class="con-nav-title">数据开放平台</span>
       </h1>
-    </a>
+    </router-link>
     <el-menu
       router
       :defaultActive="getPath"

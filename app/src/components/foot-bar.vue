@@ -6,25 +6,24 @@
       <div class="content clearfix">
         <div class="item">
           <h5>快速入口</h5>
-          <p><a href="/service/index.html">数据服务</a></p>
-          <p><a href="/dynamic/industry/index.html">产品&amp;行业动态</a></p>
+          <p><router-link to="/service/index.html">数据服务</router-link></p>
+          <p><router-link to="/dynamic/industry/index.html">产品&amp;行业动态</router-link></p>
           <!-- <p>联系我们</p> -->
         </div>
         <div class="item">
           <h5>车联网产品</h5>
-          <p><a href="/cars/truck/index.html">中重卡车联网平台</a></p>
-          <p><a href="/cars/energy/index.html">新能源车联网平台</a></p>
-          <p><a href="/cars/mechanics/index.html">工程机械车联网平台</a></p>
-          <p><a href="/cars/bus/index.html">客车车联网平台</a></p>
-          <p><a href="/cars/passenger/index.html">乘用车车联网平台</a></p>
+          <p><router-link to="/cars/truck/index.html">中重卡车联网平台</router-link></p>
+          <p><router-link to="/cars/energy/index.html">新能源车联网平台</router-link></p>
+          <p><router-link to="/cars/mechanics/index.html">工程机械车联网平台</router-link></p>
+          <p><router-link to="/cars/bus/index.html">客车车联网平台</router-link></p>
+          <p><router-link to="/cars/passenger/index.html">乘用车车联网平台</router-link></p>
         </div>
         <div class="item">
           <h5>解决方案</h5>
-          <p><a href="">车队管理系统</a></p>
-          <p><a href="">金融车联网系统</a></p>
-          <p><a href="">物流车联网系统</a></p>
-          <p><a href="">经销/服务商车联网系统</a></p>
-          <p><a href="">供应商车联网系统</a></p>
+          <p><router-link to="/solution/manage/index.html">车队管理系统</router-link></p>
+          <p><router-link to="/solution/finance/index.html">金融车联网系统</router-link></p>
+          <p><router-link to="/solution/logistic/index.html">物流车联网系统</router-link></p>
+          <p><router-link to="/solution/service/index.html">经销/服务商车联网系统</router-link></p>
         </div>
         <div class="item">
           <h5>关注智科</h5>

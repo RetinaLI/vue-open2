@@ -13,8 +13,8 @@
         </a>
       </div>
     </div>
-    <div class="block">
-      <el-pagination background @current-change="handleCurrentChange" :current-page.sync="curPage" :page-size="pageSize" layout="prev, pager, next" :total="totalCount">
+    <div class="block" v-show="pagination.totalCount > pagination.pageSize">
+      <el-pagination background @current-change="handleCurrentChange" :current-page.sync="pagination.pageNum" :page-size="pagination.pageSize" layout="prev, pager, next" :total="pagination.totalCount">
       </el-pagination>
     </div>
   </div>
@@ -27,41 +27,30 @@ export default {
     return {
       apiService: new ApiService(),
       industry: [],
-      totalCount: 0,
-      pageSize: 9,
-      // curPage 与param 应该是同一个值，但是用同一个变量时，分页器的当前页会有bug，原因还没找到
-      // 用于分页器当前页
-      curPage: 1,
-      // 用于 传参 当前页
-      param: 1
+      pagination: {
+        totalCount: 0,
+        pageSize: 20,
+        pageNum: 1
+      }
     };
   },
   created () {
     this.getData();
   },
   methods: {
-    getData () {
-      var p = parseInt(this.$route.query.page);
-      if (p) {
-        this.param = p;
-      }
+    async getData () {
       // 获取数据
-      this.apiService.getDynamicIndustry({
-        'pageSize': this.pageSize,
-        'pageNum': this.param,
+      let res = await this.apiService.getDynamicIndustry({
+        'pageSize': this.pagination.pageSize,
+        'pageNum': this.pagination.pageNum,
         'type': 'industry'
-      })
-        .then(res => {
-          this.industry = res.list;
-          this.totalCount = res.count;
-          this.curPage = p;
-        });
+      });
+      this.industry = res.list;
+      this.pagination.totalCount = res.count;
     },
     handleCurrentChange (val) {
-      // 点击分页跳转
-      var url = this.$route.fullPath;
-      var nUrl = url.split('?page=')[0] + '?page=' + val;
-      window.location.href = nUrl;
+      this.pagination.pageNum = parseInt(val);
+      this.getData();
     }
   },
   metaInfo: {
@@ -112,7 +101,7 @@ export default {
       height: 122px;
       position: relative;
       h5 {
-        font-size: 20px;
+        font-size: 16px;
         color: #111;
         line-height: 28px;
         height: 56px;

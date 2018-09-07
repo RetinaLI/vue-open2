@@ -1,9 +1,9 @@
 <template>
   <div class="fl menus">
-    <h5 v-for="(item, index) in navData" :key="index">
-      <a :class="{'on': currentNav == item.id}" :href="`${url}?apiType=${item.id}`">
-        {{ item.name }}
-      </a>
+    <h5 v-for="(item, index) in navData"
+      :key="index" @click="clickHandler(item.id)"
+      >
+      <span :class="{'on': currentNav == item.id}">{{ item.name }}</span>
     </h5>
   </div>
 </template>
@@ -16,13 +16,18 @@ export default {
     };
   },
   created () {
+  },
+  methods: {
+    clickHandler (id) {
+      this.$emit('sideNavClick', id);
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 .menus {
   width: 185px;
-  h5 a {
+  h5 span {
     display: block;
     margin-bottom: 20px;
     width: 180px;
@@ -34,6 +39,7 @@ export default {
     color: #666;
     background-position: 20px center;
     background-repeat: no-repeat;
+    cursor: pointer;
     &.run {
       background-image: url(./img/icon_run_grey.png);
     }

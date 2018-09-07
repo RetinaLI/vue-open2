@@ -3,7 +3,8 @@ import Vuex from 'vuex';
 import createLogger from 'vuex/dist/logger';
 // 引入单独模块
 import * as types from './mutation-types';
-import login from './modules/login';
+import info from './modules/info';
+import passport from './modules/passport';
 import { ProfileService } from '@/services/profile';
 import newsService from '@/services/news';
 
@@ -16,8 +17,8 @@ let profileService = new ProfileService();
 export const STORE_MUTATION_MAP = {
   UPDATE_CURRENT_USER: 'UPDATE_CURRENT_USER',
   UPDATE_VALID_MENUS: 'UPDATE_VALID_MENUS',
-  UPDATE_EMAIL: 'UPDATE_EMAIL',
   UPDATE_HEADIMG: 'UPDATE_HEADIMG',
+  UPDATE_TOKEN: 'UPDATE_TOKEN',
   UPDATE_NAME: 'UPDATE_NAME'
 };
 
@@ -30,9 +31,6 @@ export const store = new Vuex.Store({
     }
   },
   getters: {
-    // getCurrentUser (state) {
-    //   return state.currentUser;
-    // }
     getCurrentUser (state) {
       return state.currentUser;
     },
@@ -65,8 +63,8 @@ export const store = new Vuex.Store({
     [STORE_MUTATION_MAP.UPDATE_CURRENT_USER] (state, user) {
       state.currentUser = { ...state.currentUser, ...user };
     },
-    [STORE_MUTATION_MAP.UPDATE_EMAIL] (state, email) {
-      state.currentUser.email = email;
+    [STORE_MUTATION_MAP.UPDATE_TOKEN] (state, token) {
+      state.currentUser.token = token;
     },
     [STORE_MUTATION_MAP.UPDATE_NAME] (state, name) {
       state.currentUser.name = name;
@@ -84,7 +82,8 @@ export const store = new Vuex.Store({
     }
   },
   modules: {
-    login
+    info,
+    passport
   },
   strict: debug, // 开发环境下使用严格模式
   plugins: debug ? [createLogger()] : [] // 开发环境输出log

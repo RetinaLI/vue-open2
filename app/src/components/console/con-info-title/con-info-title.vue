@@ -4,6 +4,7 @@
     <span class="title-auth" :class="info[parseInt(showAuth.authStatus)]" v-if="showAuth.bool">{{auth[parseInt(showAuth.authStatus)]}}</span>
     <el-button
       v-if="isShow"
+      v-show="!Boolean(showAuth.authStatus === '0')"
       type="text danger"
       class="con-info-change"
       @click="changeHandle()"

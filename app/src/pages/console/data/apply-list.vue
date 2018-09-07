@@ -24,14 +24,14 @@
       </el-table-column>
       <el-table-column :width="WITH_LESS_8_WORDS" align="center" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.applyStatus === 0" type="primary" :round="true" size="mini" class="el-button" disabled align="center">
+          <el-button v-if="statusId === 0" type="primary" :round="true" size="mini" class="el-button" disabled align="center">
             审核中
           </el-button>
-          <el-button v-else-if="scope.row.applyStatus === 1" type="primary" :round="true" size="mini" @click="handleTableCheckClick(scope.row)" class="el-button" align="center">
+          <el-button v-else-if="statusId === 1" type="primary" :round="true" size="mini" @click="handleTableCheckClick(scope.row)" class="el-button" align="center">
             查看
           </el-button>
-          <el-button v-else type="success" :round="true" size="mini" @click="handleApplyDataClick(scope.row)" class="el-button" align="center">
-            {{ clickedText }}
+          <el-button v-else type="success" :round="true" size="mini" @click="handleApplyDataClick(scope.row, $event)" class="el-button" align="center">
+            申请
           </el-button>
         </template>
       </el-table-column>
@@ -86,22 +86,26 @@ export default {
         curPage: 1
       },
       tableData: [],
-      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作'],
-      clickedText: '申请'
+      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作']
     };
   },
   methods: {
     handleTableCheckClick (row) {
       this.$router.push({ path: '/console/data/detail/index.html', query: { id: row.id } });
     },
-    handleApplyDataClick (row) {
+    handleApplyDataClick (row, $e) {
+      let btn = $e.target.parentNode;
       let confirm = ToastTip.confirm({
         content: `您将购买数据接口“${row.name}”`
       });
       confirm.then(() => {
         this.apiService.applyData({id: row.id}).then(res => {
           common.requestMsgHandler(res);
-          if (res.code === 1) row.applyStatus = 0;
+          if (res.code === 1) {
+            btn.disabled = 'disabled';
+            btn.className = 'el-button el-button el-button--primary el-button--mini is-disabled is-round';
+            btn.innerHTML = '<span>审核中</span>';
+          }
         }).catch(() => { });
       }).catch(() => {});
     },

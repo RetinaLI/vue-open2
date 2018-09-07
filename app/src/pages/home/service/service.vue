@@ -2,7 +2,11 @@
   <div class="box">
     <navbg v-if="isConsole"></navbg>
     <div class="service wrap clearfix">
-      <service-side-nav v-bind:navData="listApiType" v-bind:currentNav="apiType"></service-side-nav>
+      <service-side-nav
+        v-bind:navData="listApiType"
+        v-bind:currentNav="apiType"
+        @sideNavClick="sideNavHander">
+      </service-side-nav>
       <div class="fr content">
         <div class="top">
           <div class="txt">车辆数据共包含
@@ -32,7 +36,7 @@
       </div>
     </div>
     <div class="block" v-show="pagination.totalCount > pagination.pageSize">
-      <el-pagination background @current-change="handleCurrentChange" :current-page.sync="pagination.curPage" :page-size="pagination.pageSize" layout="prev, pager, next" :total="pagination.totalCount">
+      <el-pagination background @current-change="handleCurrentChange" :current-page.sync="pagination.pageNum" :page-size="pagination.pageSize" layout="prev, pager, next" :total="pagination.totalCount">
       </el-pagination>
     </div>
   </div>
@@ -61,8 +65,7 @@ export default {
       pagination: {
         totalCount: 0,
         pageSize: 20,
-        // curPage用于分页器当前页
-        curPage: 1
+        pageNum: 1
       },
       apis: [],
       // 用于判断是前台页面还是控制台页面
@@ -80,19 +83,24 @@ export default {
     }
   },
   methods: {
+    sideNavHander (id) {
+      this.apiType = id;
+      this.pagination.pageNum = 1;
+      this.keywords = '';
+      this.getData();
+    },
     jumpToDetail (id) {
-      window.location.href = `/service/detail/index.html?id=${id}`;
+      this.$router.push({ path: '/service/detail/index.html', query: { id: id } });
     },
     handleSearch () {
-      var url = this.$route.path;
-      var nUrl = url + '?page=1&apiType=' + this.apiType + '&name=' + this.enCodeURIKeywords;
-      window.location.href = nUrl;
+      this.pagination.pageNum = 1;
+      this.getData();
     },
     async getData () {
       // 获取数据
       let res = await this.apiService.getInterfaces({
         'pageSize': this.pagination.pageSize,
-        'pageNum': this.param,
+        'pageNum': this.pagination.pageNum,
         'apiTypeId': this.apiType,
         'name': this.enCodeURIKeywords
       });
@@ -101,28 +109,14 @@ export default {
     },
     handleCurrentChange (val) {
       // 点击分页跳转
-      var url = this.$route.path;
-      var nUrl = url + '?page=' + val + '&apiType=' + this.apiType + '&name=' + this.enCodeURIKeywords;
-      window.location.href = nUrl;
+      this.pagination.pageNum = parseInt(val);
+      this.getData();
     },
     async getListApiType () {
       let res = await this.apiService.getListApiType();
       if (Array.isArray(res) && res.length !== 0) {
         this.listApiType = res;
-        this.path = this.$route.path;
-        var q = this.$route.query;
-        // p 是当前的page
-        var { page: p, apiType: t, name: keywords } = q;
-        p = parseInt(p || 1);
-        t = parseInt(t);
-        if (keywords) this.keywords = keywords;
-        if (p) this.param = p;
-        if (t) {
-          this.apiType = t;
-        } else {
-          this.apiType = res[0].id;
-        }
-        this.pagination.curPage = 1;
+        this.apiType = res[0].id;
         this.getData();
       }
     },

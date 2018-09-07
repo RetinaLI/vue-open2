@@ -76,36 +76,33 @@ export default {
     handleTableClick (row) {
       this.$router.push({ path: '/console/data/detail/index.html', query: { id: row.id } });
     },
-    getListApiType () {
-      this.apiService.getListApiType().then(res => {
-        if (!res || res.length === 0) return false;
-        this.apiTypes = res;
-        let p = Number(this.$route.query.page);
-        let t = Number(this.$route.query.apiType);
-        if (p) this.pagination.curPage = p;
-        if (t) {
-          this.apiType = t;
-          this.tabsModel = 'type' + t;
-        } else {
-          this.apiType = res[0].id;
-          this.tabsModel = 'type' + res[0].id;
-        }
-        this.getData();
-      });
+    async getListApiType () {
+      let res = await this.apiService.getListApiType();
+      if (!res || res.length === 0) return false;
+      this.apiTypes = res;
+      let p = Number(this.$route.query.page);
+      let t = Number(this.$route.query.apiType);
+      if (p) this.pagination.curPage = p;
+      if (t) {
+        this.apiType = t;
+        this.tabsModel = 'type' + t;
+      } else {
+        this.apiType = res[0].id;
+        this.tabsModel = 'type' + res[0].id;
+      }
+      this.getData();
     },
-    getData () {
-      this.apiService.getApiSubscibe({
+    async getData () {
+      let res = await this.apiService.getApiSubscibe({
         'status': 1,
         'pageSize': this.pagination.pageSize,
         'pageNum': this.pagination.curPage,
         'apiTypeId': this.apiType,
         'name': this.enCodeURIKeywords
-      })
-        .then(res => {
-          this.tableData = res.list;
-          this.pagination.totalCount = res.totalCount || res.count;
-          this.keywords = '';
-        });
+      });
+      this.tableData = res.list;
+      this.pagination.totalCount = res.totalCount || res.count;
+      this.keywords = '';
     },
     handleCurrentChange (val) {
       // 点击分页跳转
@@ -118,7 +115,6 @@ export default {
       this.$router.push({path: this.$route.path + '?page=' + this.pagination.curPage + '&name=' + this.enCodeURIKeywords});
     },
     handleTypeClick (pane) {
-      console.log(pane);
       // 重置分类
       let paneName = pane.paneName;
       this.apiType = parseInt(paneName.split('type')[1]);

@@ -34,11 +34,7 @@ router.get(URL_PREFIXERS + '/test', (req, res) => {
 });
 
 router.get(URL_PREFIXERS + '/api/front/me/userInfo.json', (req, res) => {
-  res.status(200).send(ControllerMap.profile.getCurrentUser());
-});
-
-router.get(URL_PREFIXERS + '/api/front/me/userInfo.json', (req, res) => {
-  res.status(200).send(ControllerMap.profile.getCurrentUser());
+  res.status(404).send(ControllerMap.profile.getCurrentUser());
 });
 
 router.get(URL_PREFIXERS + '/profile/menus', (req, res) => {
@@ -177,10 +173,25 @@ router.post(URL_PREFIXERS + '/api/front/auth/save.json', (req, res) => {
   res.status(200).send(ControllerMap.auth.postAuth());
 });
 
-router.post(URL_PREFIXERS + '/api/front/user/recharge.json', (req, res) => {
-  res.status(200).send(ControllerMap.pay.postPay());
+router.post(URL_PREFIXERS + '/api/front/user/rechargePrecreate.json', (req, res) => {
+  res.status(200).send(ControllerMap.pay.postEwm());
 });
 
+router.post(URL_PREFIXERS + '/gateway/pay/scanPay/orderQueryByOrderNo.json', (req, res) => {
+  res.status(200).send(ControllerMap.pay.postPayRes());
+});
+
+router.post(URL_PREFIXERS + '/gateway/pay/scanPay/toPayResult.htm', (req, res) => {
+  res.status(200).send(ControllerMap.pay.postPaied());
+});
+
+router.get(URL_PREFIXERS + '/pay/scanPayPrecreate.json', (req, res) => {
+  res.status(200).send(ControllerMap.pay.getEwmUrl());
+});
+
+router.post(URL_PREFIXERS + '/api/front/user/recharge.htm', (req, res) => {
+  res.status(200).send(ControllerMap.pay.postPay());
+});
 router.get(URL_PREFIXERS + '/console/getNews', (req, res) => {
   res.status(200).send(ControllerMap.news.getNews());
 });
@@ -219,6 +230,10 @@ router.post(URL_PREFIXERS + '/nosecurity/api/front/verification/sendEmailCode.js
 
 router.get(URL_PREFIXERS + '/api/front/user!logout.do', (req, res) => {
   res.status(200).send(ControllerMap.passport.logout());
+});
+
+router.post(URL_PREFIXERS + '/api/front/user/checkRegisterInfo.json', (req, res) => {
+  res.status(200).send(ControllerMap.passport.checkAjax());
 });
 
 router.post(URL_PREFIXERS + '/api/front/me/modifyHeadImage.json', (req, res) => {

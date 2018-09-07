@@ -4,6 +4,9 @@
     <div class="con-info-user">
       <div v-if="!paid">
         <div class="con-pay-auto">
+          <div class="con-pay-img">
+            <img :src="getEwmUrl" alt="">
+          </div>
           <el-form
             label-width="100px"
             class="con-pay-form"
@@ -13,7 +16,6 @@
           >
             <el-form-item
               label="充值金额 :"
-              v-show="payed"
             >
               <el-button
                 plain
@@ -28,7 +30,8 @@
               <div class="con-pay-custom-btn">
                 <div class="con-pay-btn con-pay-custom" :class="{'is-custom': isCustom}">
                   <el-form-item prop="payMoney">
-                    <el-input placeholder="自定义" v-model="ruleForm.payMoney" @focus="changeCustom"></el-input>
+                    <el-input placeholder="自定义" v-model="ruleForm.payMoney" @focus="changeCustom"
+                              @blur="blurCustom"></el-input>
                     <b class="small">元</b>
                   </el-form-item>
                 </div>
@@ -58,17 +61,16 @@
                 <!--<span>微信</span>-->
                 <!--</div>-->
               </div>
-              <div class="con-pay-code" v-if="!payed">
-                <img :src="codeImg" alt="">
-                <p>请使用{{way.name}}扫一扫，扫描二维码支付</p>
-                <p>请尽快完成支付，超时订单将自动取消。</p>
-              </div>
+              <!--<div class="con-pay-code" v-if="!payed">-->
+              <!--<img :src="codeImg" alt="">-->
+              <!--<p>请使用{{way.name}}扫一扫，扫描二维码支付</p>-->
+              <!--<p>请尽快完成支付，超时订单将自动取消。</p>-->
+              <!--</div>-->
             </el-form-item>
             <el-form-item>
               <el-button
                 type="primary"
                 class="con-pay-btn"
-                v-show="payed"
                 @click="onSubmit('ruleForm')">立即支付
               </el-button>
             </el-form-item>
@@ -117,8 +119,9 @@
 <script>
 import ToastTip from '@/lib/message';
 import ConBreadCrumbs from '@/components/console/con-bread-crumbs/index';
-import codeImg from '@/assets/images/balance/zfb.png';
 import payService from '@/services/pay';
+import { mapGetters } from 'vuex';
+import { getUrlConfig } from '@/http/http.url.config';
 
 export default {
   name: 'Pay',
@@ -127,7 +130,6 @@ export default {
   },
   data () {
     let checkNum = (rule, value, callback) => {
-      console.log(value);
       if (!Number.isInteger(Number(value)) || Number(value) <= 0) {
         callback(new Error('请输入正整数值'));
       } else {
@@ -135,6 +137,7 @@ export default {
       }
     };
     return {
+      times: null,
       crumbs: {
         nav: [
           {
@@ -158,7 +161,7 @@ export default {
           info: '落地运营平台余额充值'
         }
       ],
-      codeImg, // 支付二维码
+      payImg: '', // 支付二维码
       ruleForm: {
         payMoney: ''
       },
@@ -184,14 +187,14 @@ export default {
           },
           isPay: false,
           isPayed: true
-        },
-        {
-          way: {
-            name: '微信',
-            arg: 'WEIXIN'
-          },
-          isPay: false,
-          isPayed: true
+          // },
+          // {
+          //   way: {
+          //     name: '微信',
+          //     arg: 'WEIXIN'
+          //   },
+          //   isPay: false,
+          //   isPayed: true
         }
       ],
       way: '', // 支付方式
@@ -201,15 +204,28 @@ export default {
           {validator: checkNum, trigger: 'blur'}
         ]
       },
+      formNum: 0,
       payed: true, // 去支付
       paid: false // 支付完成
     };
   },
   computed: {
+    ...mapGetters([
+      'getCurrentUser'
+    ]),
     checkPayMoney () {
       return !Number.isInteger(Number(this.ruleForm.payMoney)) || Number(this.ruleForm.payMoney) <= 0
         ? ''
         : this.ruleForm.payMoney;
+    },
+    getEwmUrl () {
+      if (this.payImg) {
+        let {accountNo, orderNo, orderPrice, payWayType, orderForm, productName, orderIp} = this.payImg;
+        return `${getUrlConfig(
+          'getEwmUrl').url}?accountNo=${accountNo}&orderNo=${orderNo}&orderPrice=${orderPrice}&payWayType=${payWayType}&orderForm=${encodeURIComponent(
+          orderForm)}&productName=${encodeURIComponent(productName)}&orderIp=${orderIp}`;
+      }
+      return '';
     }
   },
   methods: {
@@ -223,26 +239,44 @@ export default {
         return false;
       }
       // console.log(`submit:充值金额${parseInt(this.ruleForm.payMoney)}元，充值方式${this.way}`);
-      let code = await payService.goPay({
+      payService.goPay({
         orderPrice: this.ruleForm.payMoney,
-        payWayType: this.way.arg
+        payWayType: this.way.arg,
+        token: this.getCurrentUser.token
       });
-      if (code) {
-        // 显示支付方式
-        this.pays.map(ele => {
-          ele.isPayed = ele.way === this.way ? Boolean(true) : Boolean(false);
-        });
-        this.payed = false;
-      } else {
-        ToastTip.error('支付失败！');
-      }
+      console.log('支付了！');
+      // if (code) {
+      // 显示支付方式
+      // this.pays.map(ele => {
+      //   ele.isPayed = ele.way === this.way ? Boolean(true) : Boolean(false);
+      // });
+      // this.payed = false;
+      // } else {
+      //   ToastTip.error('支付失败！');
+      // }
     },
     changePayMoney (item) {
       this.isCustom = false;
       this.ruleForm.payMoney = item.num;
+      // 修复表单是否与原值
+      if (this.formNum !== this.checkPayMoney) {
+        this.way = '';
+        this.pays.map(ele => {
+          ele.isPay = false;
+        });
+      }
       this.btns.map(ele => {
         ele.isChecked = ele === item ? Boolean(true) : Boolean(false);
       });
+    },
+    blurCustom () {
+      // 修复表单是否与原值
+      if (this.formNum !== this.checkPayMoney) {
+        this.way = '';
+        this.pays.map(ele => {
+          ele.isPay = false;
+        });
+      }
     },
     changeCustom () {
       this.btns.map(ele => {
@@ -250,12 +284,63 @@ export default {
       });
       this.isCustom = true;
     },
-    changePay (item) {
-      this.way = item.way;
-      this.pays.map(ele => {
-        ele.isPay = ele === item ? Boolean(true) : Boolean(false);
-      });
+    async changePay (item) {
+      if (this.checkPayMoney) {
+        this.way = item.way;
+        if (this.way) {
+          this.interResult();
+          this.pays.map(ele => {
+            ele.isPay = ele === item ? Boolean(true) : Boolean(false);
+          });
+          // 请求二维码
+          if (this.formNum !== this.checkPayMoney) {
+            this.formNum = this.checkPayMoney;
+            let {code, data, message} = await payService.postEwm({
+              orderPrice: this.checkPayMoney,
+              payWayType: this.way.arg,
+              token: this.getCurrentUser.token
+            });
+            if (code === 1) {
+              // 获取二维码
+              // let {code, data, message} = await payService.getEwmUrl(data);
+              this.payImg = data;
+              console.log(this.payImg);
+            } else {
+              ToastTip.error(message);
+            }
+          }
+        }
+      } else {
+        ToastTip.error('请先选择充值金额');
+      }
+    },
+    async orderResult () {
+      if (this.payImg.orderNo) {
+        let {data} = await payService.postPayRes({
+          orderNo: this.payImg.orderNo,
+          accountNo: this.payImg.orderNo,
+          token: this.getCurrentUser.token
+        });
+        return data;
+      }
+    },
+    interResult () {
+      let _self = this;
+      this.times = setInterval(() => {
+        let data = _self.orderResult();
+        if (data.status === 'YES') {
+          clearInterval(this.times);
+          payService.postPaied({
+            orderNo: this.payImg.orderNo,
+            accountNo: this.payImg.orderNo,
+            token: this.getCurrentUser.token
+          });
+        }
+      }, 10000);
     }
+  },
+  destroyed: function () {
+    clearInterval(this.times);
   },
   components: {
     ConBreadCrumbs
@@ -268,6 +353,7 @@ export default {
   $zfb: '~@/assets/images/balance/zfb.png';
   $wx: '~@/assets/images/balance/weixin.png';
   $cuo: '~@/assets/images/balance/cuo.png';
+  $ewm: '~@/assets/images/balance/ewm.png';
   $allColor: #4475FD;
   .con-pay-title {
     justify-content: start;
@@ -284,6 +370,33 @@ export default {
   .con-pay-auto {
     width: 600px;
     margin: 0 auto;
+    position: relative;
+    .con-pay-img {
+      position: absolute;
+      right: 55px;
+      bottom: 0;
+      width: 130px;
+      height: 130px;
+      background: url($ewm) no-repeat;
+      background-size: 100% 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      &:before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 16px;
+        height: 16px;
+        opacity: .8;
+        margin: -8px 0 0 -8px;
+        background: url($zfb) #fff no-repeat center center;
+        background-size: 100% 100%;
+      }
+    }
   }
 
   .con-pay-form {

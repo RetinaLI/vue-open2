@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import userIcon from './images/icon-user.png';
+import iconPng from '@/assets/images/icon-user.png';
 import { mapGetters } from 'vuex';
 import ToastTip from '@/lib/message.js';
 import { PassportService } from '@/services/passport';
@@ -50,22 +50,22 @@ export default {
   name: 'LoginUserTitle',
   data () {
     return {
-      userIcon,
+      userIcon: iconPng,
       showed: false,
       timers: null,
       title: [
         {
           name: '账户信息',
           path: '/console/info/index.html'
-        }
+        },
         // {
         //   name: '我的消息',
         //   path: '/console/news'
         // },
-        // {
-        //   name: '我的余额',
-        //   path: '/console/balance/index.html'
-        // }
+        {
+          name: '我的余额',
+          path: '/console/balance/index.html'
+        }
 
       ],
       getNewsLength: 0
@@ -104,14 +104,10 @@ export default {
         ToastTip.success(res.message, 2000);
         this.hideInfo();
         setTimeout(() => {
-          window.location.reload();
+          window.location.href = '/index.html';
         }, 1000);
       } else {
-        if (res.message) {
-          ToastTip.error(res.message, 2000);
-        } else {
-          ToastTip.error('退出失败', 2000);
-        }
+        window.location.href = '/index.html';
       }
     }
   },
@@ -255,10 +251,14 @@ export default {
   }
 
   .flipInY-leave-active {
+    display: none;
+  }
+  /*
+  .flipInY-leave-active {
     @extend .animated;
     @extend .flipOutY;
   }
-
+  */
   @-webkit-keyframes flipInY {
     from {
       -webkit-transform: perspective(400px) rotate3d(0, 1, 0, 90deg);

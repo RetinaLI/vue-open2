@@ -77,6 +77,7 @@ import ToastTip from '@/lib/message';
 import authService from '@/services/auth';
 import ConTitle from '@/components/console/con-info-title/con-info-title';
 import { getUrlConfig } from '@/http/http.url.config';
+import ValidateFactory from '@/lib/validate';
 
 export default {
   name: 'PersonalAuth',
@@ -107,7 +108,7 @@ export default {
           {required: true, message: '请输入企业名称', trigger: 'blur'}
         ],
         regNum: [
-          {required: true, message: '请输入统一社会信用代码/营业执照注册号', trigger: 'blur'}
+          {validator: ValidateFactory.NumAndWord, trigger: 'blur'}
         ],
         photo: [
           {required: true, message: '请上传营业执照影印件', trigger: 'blur'}
@@ -143,7 +144,7 @@ export default {
           } else {
             let {code = 0, message = ''} = await authService.postAuth({
               enterprise: this.ruleForm.name,
-              uscc: this.ruleForm.regNum,
+              uscc: this.ruleForm.regNum.toLocaleUpperCase(),
               businessLicense: this.ruleForm.photo,
               operator: this.ruleForm.uname,
               mobile: this.ruleForm.tel

@@ -3,9 +3,9 @@
     <navbg></navbg>
     <div class="content">
       <div class="tab">
-        <a class="ind" ref="industry" href="/dynamic/industry/index.html">行业动态</a>
-        <a class="pro" ref="products" href="/dynamic/products/index.html">产品动态</a>
-        <p ref="border" class="border"></p>
+        <router-link class="ind" ref="industry" to="/dynamic/industry/index.html">行业动态</router-link>
+        <router-link class="pro" ref="products" to="/dynamic/products/index.html">产品动态</router-link>
+        <p ref="border" class="border industry"></p>
       </div>
       <router-view/>
     </div>
@@ -19,29 +19,31 @@ export default {
     return {
     };
   },
-  methods: {
-  },
   mounted () {
-    var routeName = this.$route.name;
-    var industry = this.$refs.industry;
-    var products = this.$refs.products;
-    var border = this.$refs.border;
-    if (routeName === 'dynamicIndustry') {
-      industry.className = 'on';
-      border.className += ' industry';
-    } else {
-      products.className = 'on';
-      border.className += ' products';
+    this.setClass();
+  },
+  methods: {
+    setClass () {
+      let routeName = this.$route.name;
+      let border = this.$refs.border;
+      if (routeName === 'dynamicIndustry') {
+        border.className = 'border industry';
+      } else {
+        border.className = 'border products';
+      }
     }
   },
   components: {
     Navbg
+  },
+  watch: {
+    '$route': 'setClass'
   }
 };
 </script>
 <style lang="scss" scoped>
 .news {
-  background-color: #F6F9FC;
+  background-color: #f6f9fc;
   height: 100%;
   .content {
     margin: 0 auto 60px;
@@ -53,16 +55,16 @@ export default {
       border-bottom: 1px solid #eee;
       a {
         margin: 0 35px;
-        font-size: 24px;
+        font-size: 20px;
         color: #555;
         &.on {
-          color: #4475FD;
+          color: #4475fd;
         }
         &.ind:hover ~ .border {
-          left: 474px;
+          left: 487px;
         }
         &.pro:hover ~ .border {
-          left: 648px;
+          left: 639px;
         }
       }
       .border {
@@ -71,14 +73,14 @@ export default {
         left: 0;
         width: 60px;
         height: 4px;
-        background-color: #4475FD;
-        transition: left .5s;
+        background-color: #4475fd;
+        transition: left 0.5s;
 
         &.industry {
-          left: 474px;
+          left: 487px;
         }
         &.products {
-          left: 648px;
+          left: 639px;
         }
       }
     }

@@ -10,8 +10,8 @@
         <h3>{{ api.name }}</h3>
         <p class="abstract">{{ api.abstract }}</p>
         <p class="price">
-          <span class="money">{{ '￥' + api.price*100000 }}</span>
-          <span class="count">/100000次</span>
+          <span class="money">{{ '￥' + api.price }}</span>
+          <span class="count">/次</span>
         </p>
         <p class="limit">每月上限{{ api.monthlyCapPrice }}元</p>
         <div>
@@ -40,6 +40,7 @@ import ToastTip from '@/lib/message.js';
 import common from '@/lib/common.js';
 // for markdown
 import '@/lib/editormd/editormd.preview.css';
+import '@/assets/styles/markdown.scss';
 import '@/lib/editormd/marked.min.js';
 import '@/lib/editormd/prettify.min.js';
 import '@/lib/editormd/editormd.js';
@@ -73,7 +74,8 @@ export default {
       this.apiTypeStatus = res.applyStatus;
       /* eslint-disable */
         editormd.markdownToHTML('markdown', {
-          markdown: res.intro
+          markdown: res.intro,
+          htmlDecode: 'html'
         });
         /* eslint-enable */
     },
@@ -105,6 +107,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import url('../../../assets/styles/markdown.scss');
 
 .box {
   background-color: #f6f9fc;
@@ -187,4 +190,5 @@ export default {
     }
   }
 }
+
 </style>

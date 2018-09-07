@@ -49,5 +49,11 @@ module.exports = {
       'text': '',
       'url': ''
     };
+  },
+  checkAjax () {
+    return {
+      'code': 1,
+      'msg': 'chengg啦啦啦啦啦'
+    };
   }
 };

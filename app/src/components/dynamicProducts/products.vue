@@ -10,14 +10,14 @@
         </a>
       </div>
     </div>
-    <div class="block">
+    <div class="block" v-show="pagination.totalCount > pagination.pageSize">
       <el-pagination
         background
         @current-change="handleCurrentChange"
-        :current-page.sync="curPage"
-        :page-size="pageSize"
+        :current-page.sync="pagination.pageNum"
+        :page-size="pagination.pageSize"
         layout="prev, pager, next"
-        :total="totalCount">
+        :total="pagination.totalCount">
       </el-pagination>
     </div>
   </div>
@@ -30,40 +30,30 @@ export default {
     return {
       apiService: new ApiService(),
       products: [],
-      totalCount: 0,
-      pageSize: 9,
-      // curPage用于分页器当前页
-      curPage: 1,
-      // param用于 传参 当前页
-      param: 1
+      pagination: {
+        totalCount: 0,
+        pageSize: 20,
+        pageNum: 1
+      }
     };
   },
   created () {
     this.getData();
   },
   methods: {
-    getData () {
-      var p = parseInt(this.$route.query.page);
-      if (p) {
-        this.param = p;
-      }
+    async getData () {
       // 获取数据
-      this.apiService.getDynamicProducts({
-        'pageSize': this.pageSize,
-        'pageNum': this.param,
+      let res = await this.apiService.getDynamicProducts({
+        'pageSize': this.pagination.pageSize,
+        'pageNum': this.pagination.pageNum,
         'type': 'product'
-      })
-        .then(res => {
-          this.products = res.list;
-          this.totalCount = res.count;
-          this.curPage = p;
-        });
+      });
+      this.products = res.list;
+      this.pagination.totalCount = res.count;
     },
     handleCurrentChange (val) {
-      // 点击分页跳转
-      var url = this.$route.fullPath;
-      var nUrl = url.split('?page=')[0] + '?page=' + val;
-      window.location.href = nUrl;
+      this.pagination.pageNum = parseInt(val);
+      this.getData();
     }
   },
   metaInfo: {
@@ -86,12 +76,12 @@ export default {
     padding-left: 26px;
     border-left: 6px solid #4475FD;
     line-height: 24px;
-    font-size: 24px;
+    font-size: 16px;
     color: #111;
   }
   div {
-    padding-left: 30px;
-    font-size: 16px;
+    padding: 0 30px;
+    font-size: 14px;
     color: #999;
     line-height: 20px;
   }

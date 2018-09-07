@@ -15,22 +15,57 @@
           :default-active="activeIndex"
           class="el-menu-top"
           mode="horizontal"
-          text-color="#fff"
-          background-color="transparent">
-          <el-menu-item class="menu-item item0" index="/">
-            <a href="/index.html">首页</a>
+          active-text-color="#fff"
+          background-color="transparent"
+          :router="true">
+          <el-menu-item class="menu-item item0" index="/index.html">
+            首页
           </el-menu-item>
-          <el-menu-item class="menu-item item1" index="service">
-            <a href="/service/index.html">数据服务</a>
+          <el-menu-item class="menu-item item1" index="/service/index.html">
+            数据服务
           </el-menu-item>
-          <el-menu-item class="menu-item item2" index="products">
-            <a href="/products/index.html">车联网产品</a>
-          </el-menu-item>
-          <el-menu-item class="menu-item item3" index="solution">
-            <a href="/solution/index.html">解决方案</a>
-          </el-menu-item>
-          <el-menu-item class="menu-item item4" index="dynamic">
-            <a href="/dynamic/industry/index.html">行业&amp;产品动态</a>
+          <el-submenu class="menu-item item2" index="/products/index.html" popper-class="sub-products elNavSubMenu">
+            <template slot="title">
+              <span @click="diyMenu('sub-products')">车联网产品</span>
+            </template>
+            <el-menu-item index="/products/index.html" class="hide">
+              products
+            </el-menu-item>
+            <el-menu-item index="/cars/truck/index.html">
+              中重卡车联网平台
+            </el-menu-item>
+            <el-menu-item index="/cars/energy/index.html">
+              新能源车联网平台
+            </el-menu-item>
+            <el-menu-item index="/cars/mechanics/index.html">
+              工程机械车联网平台
+            </el-menu-item>
+            <el-menu-item index="/cars/bus/index.html">
+              客车车联网平台
+            </el-menu-item>
+            <el-menu-item index="/cars/passenger/index.html">
+              乘用车车联网平台
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu class="menu-item item3" index="/solution.html" popper-class="sub-solutions elNavSubMenu">
+            <template slot="title">
+              <span @click="diyMenu('sub-solutions')">车联网产品</span>
+            </template>
+            <el-menu-item index="/solution/manage/index.html">
+              车队管理
+            </el-menu-item>
+            <el-menu-item index="/solution/finance/index.html">
+              金融服务
+            </el-menu-item>
+            <el-menu-item index="/solution/logistic/index.html">
+              物流管控
+            </el-menu-item>
+            <el-menu-item index="/solution/service/index.html">
+              经销/服务商
+            </el-menu-item>
+          </el-submenu>
+          <el-menu-item class="menu-item item4" index="/dynamic/industry/index.html">
+            行业&amp;产品动态
           </el-menu-item>
           <div class="border"></div>
         </el-menu>
@@ -38,20 +73,20 @@
     </div>
     <div class="operation clearfix">
       <div>
-        <a href="/console/index.html" tag="span" class="ctrl">控制台</a>
+        <router-link to="/console/index.html" tag="span" class="ctrl">控制台</router-link>
         <div v-if="!getCurrentUser.name" class="logins">
           <a tag="div" class="login" index="login" @click="toLogin">
             登录
           </a>
-          <a href="/passport/regist/index.html" tag="div" class="regist" index="regist">
+          <router-link to="/passport/regist/index.html" class="regist" index="regist">
             注册
-          </a>
+          </router-link>
         </div>
         <LoginUserTitle :isIndex="Boolean(true)" v-else/>
       </div>
-      <router-link to="/index.html" tag="div" class="login-clw">
+      <a href="http://saas.ifoton.com.cn/" target="_blank" class="login-clw">
         登录车联网平台
-      </router-link>
+      </a>
     </div>
   </div>
 </template>
@@ -65,7 +100,8 @@ export default {
   data () {
     return {
       passportService: new PassportService(),
-      activeIndex: '/',
+      activeIndex: '',
+      elMenuIndexs: ['/index.html', '/service/index.html', '/products/index.html', '/solution/manage/index.html', '/dynamic/industry/index.html'],
       isRouter: true,
       menus: {
         'index': 0,
@@ -100,10 +136,18 @@ export default {
         }
       }
       $('.top-bar .border').removeClass('pos0 pos1 pos2 pos3 pos4').addClass('pos' + n);
-      if (n === 4 || n === 1) $('.top-bar .border').css('backgroundColor', '#fff');
+      if (n === 4 || n === 1) {
+        $('.top-bar .border').addClass('white');
+      } else {
+        $('.top-bar .border').removeClass('white');
+      }
+      this.activeIndex = this.elMenuIndexs[n];
     },
     toLogin () {
       this.passportService.redirectToLogin();
+    },
+    diyMenu (cla) {
+      $('.' + cla).find('li').first().trigger('click');
     }
   },
   watch: {
@@ -115,6 +159,10 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+.hide {
+  display: none;
+}
+
 .font14 {
   font-size: 14px !important;
 }
@@ -123,10 +171,11 @@ export default {
 }
 #topbar-wrap {
   position: relative;
-  color: #fff;
+  color: rgba(255, 255, 255, 1);
   .logobox {
     margin-right: 185px;
     .logo > img {
+      transform: translateY(1px);
       height: 20px;
       @extend .font14;
     }
@@ -134,10 +183,11 @@ export default {
       @extend .font14;
     }
     .line {
+      transform: translateY(1px);
       display: inline-block;
       width: 2px;
       height: 14px;
-      background-color: rgba(68, 117, 253, 1);
+      background-color: #fff;
     }
   }
   .row {
@@ -148,19 +198,41 @@ export default {
       border: none;
       .menu-item {
         height: 64px;
-        padding: 0;
+        padding: 0 20px;
         text-align: center;
-        line-height: 65px;
-        color: #fff;
+        line-height: 64px;
         border-bottom: none;
-
+        color: rgba(255, 255, 255, 0.7);
+        background-color: transparent !important;
         &:hover,
         &:focus {
           background-color: transparent !important;
+          color: #ffffff !important;
+          span {
+            color: #fff !important;
+          }
         }
-        & > a {
-          @extend .font14;
-          padding: 12px 16px;
+
+        /deep/ .el-submenu__title {
+          padding: 0;
+          height: 100%;
+          line-height: 65px;
+          background-color: transparent !important;
+          border: 0;
+          i {
+            display: none;
+          }
+          span {
+            display: block;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+          }
+        }
+        &.is-active {
+          span {
+            color: #fff;
+          }
         }
       }
       .item0:hover ~ .border {
@@ -191,16 +263,17 @@ export default {
       float: left;
       cursor: pointer;
       @extend .font14;
-      a{
-        color:#fff;
-        font-size:14px;
-        &.ctrl{
+      a {
+        color: #fff;
+        font-size: 14px;
+        .ctrl {
           padding: 3px 5px;
+          font-size: 14px;
           border: 1px solid #fff;
         }
-        &.regist{
-          &::before{
-            content: '';
+        &.regist {
+          &::before {
+            content: "";
             width: 1px;
             height: 14px;
             background: #fff;
@@ -212,7 +285,7 @@ export default {
       }
     }
 
-    .ctrl > span {
+    span.ctrl {
       padding: 3px 5px;
       border: 1px solid rgba(277, 277, 277, 0.6);
       border-radius: 2px;
@@ -231,33 +304,39 @@ export default {
     .login-clw {
       background-color: rgba(68, 117, 253, 0.8);
       padding: 0 11px;
-      margin-left:25px;
+      margin-left: 25px;
+      color: white;
+      font-size: 14px;
+      float: left;
     }
   }
 
   .border {
-    width: 56px;
+    width: 28px;
     height: 2px;
     position: absolute;
-    top: 62px;
+    top: 50px;
     left: 0px;
     background-color: rgba(68, 117, 253, 1);
     transition: left 0.3s ease-in, width 0.3s ease-in;
+    &.white {
+      background-color: #fff;
+    }
   }
   .pos0 {
-    left: 0;
+    left: 20px;
   }
   .pos1 {
-    left: 77px;
+    left: 102px;
   }
   .pos2 {
-    left: 170px;
+    left: 206px;
   }
   .pos3 {
-    left: 267px;
+    left: 315px;
   }
   .pos4 {
-    left: 376px;
+    left: 440px;
   }
 }
 </style>

@@ -51,12 +51,13 @@ router.beforeEach(async (to, from, next) => {
     if (currentUser === undefined) {
       currentUser = await profileService.getCurrentUser();
     }
-    if (currentUser.name) { // 能够获取session
+    if (currentUser && currentUser.name) { // 能够获取session
       next();
     } else {
       // 无session，返回登录页面
-      passportService.redirectToLogin(to.fullPath);
-      next();
+      next({
+        path: passportService.getRedirectToLoginPath(to.fullPath)
+      });
     }
   } else {
     next();

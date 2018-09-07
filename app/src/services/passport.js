@@ -31,13 +31,16 @@ export class PassportService {
   }
 
   redirectToLogin (redirectUrl = router.history.current.fullPath) {
+    router.push({ path: this.getRedirectToLoginPath(redirectUrl) });
+  }
+
+  getRedirectToLoginPath (redirectUrl = router.history.current.fullPath) {
     let redirectObj = url.parse(redirectUrl);
 
     if (redirectObj.pathname !== this.loginPath && redirectObj.pathname !== this.registPath && redirectObj.pathname !== this.retrievePath) {
-      document.location.href = `${this.loginPath}?redirect=${redirectUrl}`;
-      return;
-    }
-    document.location.href = this.loginPath;
+      return `${this.loginPath}?redirect=${redirectUrl}`;
+    };
+    return this.loginPath;
   }
 
   async resetPassword (params) {
@@ -52,6 +55,11 @@ export class PassportService {
 
   async logout () {
     let result = await axiosApi('logout');
+    return result;
+  }
+
+  async checkAjax (params) {
+    let result = await axiosApi('checkAjax', params);
     return result;
   }
 }

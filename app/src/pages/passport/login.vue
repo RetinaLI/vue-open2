@@ -4,14 +4,14 @@
       <div class="wrapper">
         <h2 class="account-login">账号登录</h2>
         <el-form :model="ruleForm2" status-icon @keyup.enter.native="submitForm" :rules="rules2" ref="ruleForm2" label-width="60px" label-position="left" class="form">
-          <el-form-item label="账号：" prop="account" >
+          <el-form-item label="账号：" prop="account">
             <el-input type="text" class="lucencyInput" v-model="ruleForm2.account" auto-complete="off" placeholder="请输入账号"></el-input>
           </el-form-item>
           <el-form-item label="密码：" prop="password">
             <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item label="验证码：" prop="checkCode">
-            <el-input v-model="ruleForm2.checkCode"  class="check-code" placeholder="请输入验证码" ></el-input>
+            <el-input v-model="ruleForm2.checkCode" class="check-code" placeholder="请输入验证码" ></el-input>
             <div class="img-box" @click="reGetCode"><img :src="imgurl" alt=""></div>
             <span></span>
           </el-form-item>
@@ -21,8 +21,8 @@
         </el-form>
 
         <div class="box-right">
-          <a href="/passport/regist/index.html">免费注册</a>
-          <a href="/passport/retrieve/index.html">忘记密码？</a>
+          <router-link to="/passport/regist/index.html">免费注册</router-link>
+          <router-link to="/passport/retrieve/index.html">忘记密码？</router-link>
         </div>
       </div>
     </div>
@@ -43,20 +43,12 @@ export default {
     return {
       imgurl: null,
       ruleForm2: {
-        account: '',
-        password: '',
         checkCode: ''
       },
       rules2: {
-        account: [
-          { validator: ValidateFactory.account, required: true, trigger: 'blur' }
-        ],
-        password: [
-          { validator: ValidateFactory.password.fn, required: true, trigger: 'blur' },
-          { min: ValidateFactory.password.min, max: ValidateFactory.password.max, message: ValidateFactory.password.message, trigger: 'blur' }
-        ],
         checkCode: [
-          { validator: ValidateFactory.identifyCode4, required: true, trigger: 'blur' }
+          { validator: ValidateFactory.identifyCode4.fn, required: true, trigger: 'blur' },
+          { validator: ValidateFactory.identifyCode4.echeck, required: true, trigger: 'blur' }
         ]
       }
     };
@@ -78,7 +70,7 @@ export default {
           if (code === 1) {
             ToastTip.success('登录成功', 1000);
             setTimeout(() => {
-              let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+              let redirect = decodeURIComponent(this.$route.query.redirect || '/index.html');
               document.location.href = redirect;
             }, 2000);
           } else {
@@ -100,6 +92,20 @@ export default {
     resetForm () {
       this.$refs.ruleForm2.resetFields();
     }
+    // async checkAccount () {
+    //   let res = await passportService.checkAjax({
+    //     zk_captcha: this.ruleForm2.account,
+    //     type: 1
+    //   });
+    //   // Common.requestMsgHandler(res);
+    // },
+    // async checkIdentifyCode () {
+    //   let res = await passportService.checkAjax({
+    //     zk_captcha: this.ruleForm2.checkCode,
+    //     type: 2
+    //   });
+    //   // Common.requestMsgHandler(res);
+    // }
   },
   metaInfo: {
     title: '用户登录-车联网数据开放平台'

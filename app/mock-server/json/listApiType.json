@@ -1,0 +1,35 @@
+{
+  "data" : [ {
+    "id" : 5,
+    "name" : "二类接口",
+    "description" : "asdasd",
+    "sort" : 2
+  }, {
+    "id" : 6,
+    "name" : "一类接口",
+    "description" : "zxcz",
+    "sort" : 0
+  }, {
+    "id" : 4,
+    "name" : "三类接口",
+    "description" : "qweqw",
+    "sort" : 1
+  }, {
+    "id" : 22,
+    "name" : "北欧看111",
+    "description" : "dsf",
+    "sort" : 0
+  }, {
+    "id" : 23,
+    "name" : "12测试 你看看空间",
+    "description" : "12123",
+    "sort" : 120
+  }, {
+    "id" : 41,
+    "name" : "通用接口",
+    "description" : "通用数据接口",
+    "sort" : 0
+  } ],
+  "code" : 1,
+  "msg" : "获取接口类型信息成功"
+}

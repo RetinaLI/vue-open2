@@ -122,7 +122,26 @@ const HTTP_URL_MAP = {
     method: REQUEST_METHOD_MAP.POST
   },
   'postPay': {
-    url: '/api/front/user/recharge.json',
+    url: '/api/front/user/recharge.htm',
+    method: REQUEST_METHOD_MAP.POST,
+    isList: false
+  },
+  'postEwm': {
+    url: '/api/front/user/rechargePrecreate.json',
+    method: REQUEST_METHOD_MAP.POST,
+    isList: false
+  },
+  'getEwmUrl': {
+    url: '/pay/scanPayPrecreate.json',
+    isList: false
+  },
+  'postPayRes': {
+    url: '/gateway/pay/scanPay/orderQueryByOrderNo.json',
+    method: REQUEST_METHOD_MAP.POST,
+    isList: false
+  },
+  'postPaied': {
+    url: '/gateway/pay/scanPay/toPayResult.htm',
     method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
@@ -164,7 +183,7 @@ const HTTP_URL_MAP = {
     url: '/console/getDetailTable',
     isList: true
   },
-  // ？？？
+  // 登录注册
   'getIdentifyCodeUrl': {
     url: '/captcha.pic',
     isList: false
@@ -192,6 +211,11 @@ const HTTP_URL_MAP = {
   'logout': {
     url: '/api/front/user!logout.do',
     method: REQUEST_METHOD_MAP.GET,
+    isList: false
+  },
+  'checkAjax': {
+    url: '/api/front/user/checkRegisterInfo.json',
+    method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
   'modifyAvatar': {

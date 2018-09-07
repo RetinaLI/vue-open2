@@ -34,11 +34,6 @@ let getStaticRoutes = (routes = [], root_path = '') => {
 
 staticRoutes = getStaticRoutes(ROUTES);
 
-console.info('====================静态路由：=======================');
-console.info(staticRoutes);
-console.info(dynamicRoutes);
-console.info('====================================================');
-
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
@@ -108,7 +103,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       chunksSortMode: 'manual'
     }),
     ...dynamicRoutes.map(elem => {
-      console.info('../dist' + elem);
       return new HtmlWebpackPlugin({
         filename: path.resolve(__dirname, '../dist' + elem),
         template: 'index.html',

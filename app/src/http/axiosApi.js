@@ -50,6 +50,9 @@ let axiosApi = (action, data = {}) => {
         });
       }
 
+      // 支付接口
+      resData = resData.apiResponse ? resData.apiResponse : resData;
+
       let {
         code = 1,
         data = 'undefined',

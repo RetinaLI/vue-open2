@@ -19,7 +19,7 @@
       <div class="wrappr">
         <div class="text vc">
           <h3>智能生态&nbsp;智慧互联</h3>
-          <p class="font14">福田汽车探索大数据的价值，以开放共享的心态传递汽车数据给外部千万用户，共同创造数据价值</p>
+          <p class="font14">深挖车辆数据价值、数据驱动汽车行业发展、为千万车主提供更人性化的智能网联服务</p>
         </div>
       </div>
     </div>
@@ -240,6 +240,7 @@ export default {
   },
   methods: {
     handleScroll () {
+      if (this.$route.name !== 'index') return;
       var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
       var getter = $('.data-getter .data-box');
       var t1 = getter.offset().top;
@@ -314,7 +315,7 @@ export default {
     color: #fff;
     .text {
       opacity: 0;
-      width: 520px;
+      width: 480px;
       animation: banner 0.8s cubic-bezier(0.4, 0, 0.2, 1) .6s 1;
       animation-fill-mode: forwards;
       h3 {

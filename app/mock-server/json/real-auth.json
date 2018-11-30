@@ -7,7 +7,9 @@
     "uscc": "kjslkfjds1321314324324dsffdssddsfdsfd",
     "businessLicense": "http://localhost:8081/public/img/zfb.png",
     "operator": "谁谁谁",
+    "payType": 1,
     "mobile": "13222222432",
-    "authStatus": 3
+    "authStatus": 1,
+    "reason": "营业执照不正确"
   }
 }

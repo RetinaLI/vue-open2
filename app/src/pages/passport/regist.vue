@@ -80,8 +80,9 @@ export default {
     };
   },
   created () {
-    let url = getUrlConfig('getIdentifyCodeUrl').url;
-    this.imgurl = `${url}?t=` + (Date.now());
+    this.reGetCode();
+    // let url = getUrlConfig('getIdentifyCodeUrl').url;
+    // this.imgurl = `${url}?t=` + (Date.now());
   },
   methods: {
     submitForm () {
@@ -95,10 +96,12 @@ export default {
           });
           if (code === 1) {
             ToastTip.success('注册成功', 1000);
+            this.resetForm();
             setTimeout(() => {
               this.passportService.redirectToLogin();
             }, 2000);
           } else {
+            this.reGetCode();
             if (message) {
               ToastTip.error(message, 1000);
             } else {
@@ -223,7 +226,7 @@ export default {
       height: 14px;
       width: 14px;
       border-radius: 50%;
-      border: 1px solid #d5d5d5;
+      border: 1px solid #409eff;
     }
     .el-checkbox__input.is-checked+.el-checkbox__label{
       color:#aaa;
@@ -296,6 +299,7 @@ export default {
     border-radius: 20px;
     background: #4475FD;
     font-weight: bold;
+    border-color: #4475fd;
   }
   .box-right{
     float: right;

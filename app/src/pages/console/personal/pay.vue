@@ -49,7 +49,7 @@
             >
               <div class="con-pay-way">
                 <div class="con-pay-btn con-pay-way-btn"
-                     @click="changePay(pay)"
+                     @click="!disabled && changePay(pay)"
                      v-show="pay.isPayed"
                      :class="{'is-payed': pay.isPay}"
                      :key="i" v-for="(pay, i) in pays">
@@ -71,14 +71,14 @@
               <el-button
                 type="primary"
                 class="con-pay-btn"
-                @click="onSubmit('ruleForm')">立即支付
+                @click="onSubmit()">立即支付
               </el-button>
             </el-form-item>
           </el-form>
         </div>
         <div class="con-pay-info">
           <h3>充值说明</h3>
-          <p>落地运营平台充值金额可用来缴纳车辆新办理入网和车辆入网续费的费用。</p>
+          <!--<p>开放平台充值金额可用来缴纳车辆新办理入网和车辆入网续费的费用。</p>-->
           <p>若账户不再使用需要退还账户余额，请联系客服办理！</p>
         </div>
       </div>
@@ -107,8 +107,8 @@
             </el-table>
           </template>
           <div class="con-paid-back">
-            <el-button type="primary">返回商户</el-button>
-            <p class="con-paid-back-time">9秒后自动返回</p>
+            <el-button type="primary" @click="goBalance">返回</el-button>
+            <!--<p class="con-paid-back-time">{{payTime}}秒后自动返回</p>-->
           </div>
         </div>
       </div>
@@ -137,6 +137,7 @@ export default {
       }
     };
     return {
+      payTime: 10,
       times: null,
       crumbs: {
         nav: [
@@ -150,15 +151,15 @@ export default {
       tableData: [
         {
           title: '订单号',
-          info: '343243214idsfdsfsfds324243243'
+          info: ''
         },
         {
           title: '支付金额',
-          info: '500元'
+          info: ''
         },
         {
           title: '用途',
-          info: '落地运营平台余额充值'
+          info: ''
         }
       ],
       payImg: '', // 支付二维码
@@ -206,7 +207,9 @@ export default {
       },
       formNum: 0,
       payed: true, // 去支付
-      paid: false // 支付完成
+      paid: false, // 支付完成
+      paidHtml: '',
+      disabled: false
     };
   },
   computed: {
@@ -220,16 +223,21 @@ export default {
     },
     getEwmUrl () {
       if (this.payImg) {
-        let {accountNo, orderNo, orderPrice, payWayType, orderForm, productName, orderIp} = this.payImg;
+        let {accountNo, orderNo, orderPrice, payWayType, orderFrom, productName, orderIp} = this.payImg;
         return `${getUrlConfig(
-          'getEwmUrl').url}?accountNo=${accountNo}&orderNo=${orderNo}&orderPrice=${orderPrice}&payWayType=${payWayType}&orderForm=${encodeURIComponent(
-          orderForm)}&productName=${encodeURIComponent(productName)}&orderIp=${orderIp}`;
+          'getEwmUrl').url}?accountNo=${accountNo}&orderNo=${orderNo}&orderPrice=${orderPrice}&payWayType=${payWayType}&orderFrom=${encodeURIComponent(
+          orderFrom)}&productName=${encodeURIComponent(productName)}&orderIp=${orderIp}`;
+      } else {
+        return '';
       }
-      return '';
     }
   },
   methods: {
-    async onSubmit (formName) {
+    goBalance () {
+      this.$router.push({path: '/console/balance/index.html'});
+      this.paid = false;
+    },
+    async onSubmit () {
       if (!this.checkPayMoney) {
         ToastTip.error('请选择充值金额');
         return false;
@@ -238,13 +246,45 @@ export default {
         ToastTip.error('请选择支付方式');
         return false;
       }
+      // 打开新窗口
+      let openWin = window.open();
       // console.log(`submit:充值金额${parseInt(this.ruleForm.payMoney)}元，充值方式${this.way}`);
-      payService.goPay({
+      let {code, data, message} = await payService.goPay({
         orderPrice: this.ruleForm.payMoney,
         payWayType: this.way.arg,
         token: this.getCurrentUser.token
       });
-      console.log('支付了！');
+      if (code === 1) {
+        this.paidHtml = data;
+        // this.$refs.paySubmit.submit();
+        let openHtml = `<form id="paySubmit" name="paySubmit" action="${this.paidHtml.url}" method="post">
+          <input type="hidden" name="payWayType" value="${this.paidHtml.payWayType}">
+          <input type="hidden" name="orderNo" value="${this.paidHtml.orderNo}">
+          <input type="hidden" name="accountNo" value="${this.paidHtml.accountNo}">
+          <input type="hidden" name="orderIp" value="${this.paidHtml.orderIp}">
+          <input type="hidden" name="orderPrice" value="${this.paidHtml.orderPrice}">
+          <input type="hidden" name="orderFrom" value="${encodeURIComponent(this.paidHtml.orderFrom)}">
+          <input type="hidden" name="productName" value="${encodeURIComponent(this.paidHtml.productName)}">
+          <input type="submit" value="确定" style="display: none;">
+        </form>
+        <script>document.getElementById('paySubmit').submit();<\/script>`;
+        openWin.document.write(openHtml);
+        ToastTip.confirm({
+          title: '支付结果',
+          content: '请在新打开的页面完成支付，付款完成后再关闭此窗口。',
+          confirmButtonText: '支付成功'
+        })
+          .then(() => {
+            this.goBalance();
+          })
+          .catch(() => {
+          });
+      } else {
+        openWin.close();
+        ToastTip.error(message);
+      }
+
+      // opens.innerHTML = this.paidHtml;
       // if (code) {
       // 显示支付方式
       // this.pays.map(ele => {
@@ -261,6 +301,8 @@ export default {
       // 修复表单是否与原值
       if (this.formNum !== this.checkPayMoney) {
         this.way = '';
+        this.payImg = '';
+        clearInterval(this.times);
         this.pays.map(ele => {
           ele.isPay = false;
         });
@@ -273,6 +315,8 @@ export default {
       // 修复表单是否与原值
       if (this.formNum !== this.checkPayMoney) {
         this.way = '';
+        this.payImg = '';
+        clearInterval(this.times);
         this.pays.map(ele => {
           ele.isPay = false;
         });
@@ -288,23 +332,24 @@ export default {
       if (this.checkPayMoney) {
         this.way = item.way;
         if (this.way) {
-          this.interResult();
           this.pays.map(ele => {
             ele.isPay = ele === item ? Boolean(true) : Boolean(false);
           });
           // 请求二维码
           if (this.formNum !== this.checkPayMoney) {
+            this.disabled = true;
             this.formNum = this.checkPayMoney;
             let {code, data, message} = await payService.postEwm({
               orderPrice: this.checkPayMoney,
               payWayType: this.way.arg,
               token: this.getCurrentUser.token
             });
+            this.disabled = false;
             if (code === 1) {
               // 获取二维码
               // let {code, data, message} = await payService.getEwmUrl(data);
               this.payImg = data;
-              console.log(this.payImg);
+              this.interResult();
             } else {
               ToastTip.error(message);
             }
@@ -318,24 +363,33 @@ export default {
       if (this.payImg.orderNo) {
         let {data} = await payService.postPayRes({
           orderNo: this.payImg.orderNo,
-          accountNo: this.payImg.orderNo,
+          accountNo: this.payImg.accountNo,
           token: this.getCurrentUser.token
         });
-        return data;
+        return Object.assign(data, this.payImg);
       }
     },
     interResult () {
       let _self = this;
+      // 监测是否已经支付???
       this.times = setInterval(() => {
-        let data = _self.orderResult();
-        if (data.status === 'YES') {
-          clearInterval(this.times);
-          payService.postPaied({
-            orderNo: this.payImg.orderNo,
-            accountNo: this.payImg.orderNo,
-            token: this.getCurrentUser.token
-          });
-        }
+        _self.orderResult().then(data => {
+          if (data && data.status === 'YES') {
+            clearInterval(_self.times);
+            _self.tableData[0].info = data.orderNo;
+            _self.tableData[1].info = data.orderPrice;
+            _self.tableData[2].info = data.productName;
+            _self.paid = true;
+            // payService.postPaied({
+            //   orderNo: this.payImg.orderNo,
+            //   accountNo: this.payImg.accountNo,
+            //   token: this.getCurrentUser.token
+            // });
+            // this.$router.push({path: '/console/balance/index.html'});
+            // 打开新窗口,不能访问样式，所以用自己写的样式
+            // window.open(`/gateway/pay/scanPay/toPayResult.htm?orderNo=${this.payImg.orderNo}&accountNo=${this.payImg.accountNo}&token=${this.getCurrentUser.token}`);
+          }
+        });
       }, 10000);
     }
   },

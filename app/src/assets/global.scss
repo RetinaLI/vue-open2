@@ -157,6 +157,18 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+.el-tabs /deep/ {
+  .el-tabs__header {
+    border-bottom: 0;
+  }
+  .el-tabs__item {
+    border-bottom-color: #eee!important;
+    &.is-active {
+      border-bottom-color: transparent!important;
+    }
+  }
+}
+
 .my-table {
   table-layout: fixed;
   width: 100%;
@@ -176,6 +188,9 @@ h1, h2, h3, h4, h5, h6 {
   }
   /deep/ th > .cell {
     color: rgba(51, 51, 51, .5);
+  }
+  /deep/ td {
+    padding: 5px 0;
   }
 }
 
@@ -216,6 +231,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .container-wrapper {
+  min-width: 1200px;
   min-height: 100%;
 }
 
@@ -232,35 +248,26 @@ h1, h2, h3, h4, h5, h6 {
   color: #ff5656;
 }
 
-// 顶部导航二级菜单样式
-.elNavSubMenu {
-  background-color: #fff;
-  box-shadow:0px 4px 12px 0px rgba(0,0,0,0.1);
-  overflow: hidden;
-  min-width: 20px;
-
-  /deep/ {
-    ul {
-      min-width: 20px;
-      li {
-        font-size: 12px;
-        color: #666;
-      padding: 0 20px !important;
-
-        &.is-active {
-          color: #4475FD !important;
-        }
-      }
-    }
-  }
-  &.sub-products {
-    transform: translateX(-10px);
-  }
-  &.sub-solutions {
-    transform: translateX(7px);
-  }
+.d-opacity {
+  visibility: hidden;
+  opacity: 0;
 }
 
+.el-message {
+  top: 75px !important;
+}
+.el-table th {
+  font-weight: normal;
+}
+.el-table td {
+  padding: 5px 0;
+}
+.el-table .cell {
+  font-size: 14px !important;
+  .el-tooltip {
+    font-size: 14px !important;
+  }
+}
 // 物流页面banner 文字单独样式
 .logistic .banner .txt-box {
   left: 50%;

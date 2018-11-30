@@ -1,8 +1,8 @@
 {
   "data": {
-    "yesterdayConsumeSum": 50,
+    "yesterdayConsume": 50,
     "money": 100,
-    "monthRechargeSum": 2000,
-    "mouthConsumeSum": 300
+    "rechargeByMonth": 2000,
+    "monthConsume": 300
   }
 }

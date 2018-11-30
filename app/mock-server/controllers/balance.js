@@ -11,4 +11,10 @@ module.exports = {
   getBalanceTabCost () {
     return JSON.parse(fs.readFileSync(path.join(__dirname, '../json/balanceCost.json')));
   },
+  getInterfaceUsage () {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, '../json/interfaceUsage.json')));
+  },
+  getHalfMonthIUsage () {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, '../json/userReq15Days.json')));
+  }
 };

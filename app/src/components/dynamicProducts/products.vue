@@ -4,9 +4,7 @@
       <div class="pro" v-for="(value, index) in products" :key="index">
         <a :href="value.link" target="_blank">
           <h5>{{ value.title }}</h5>
-          <div>
-            {{ value.content }}
-          </div>
+          <div v-html="changeLineInStr(value.content)"></div>
         </a>
       </div>
     </div>
@@ -32,7 +30,7 @@ export default {
       products: [],
       pagination: {
         totalCount: 0,
-        pageSize: 20,
+        pageSize: 10,
         pageNum: 1
       }
     };
@@ -54,6 +52,9 @@ export default {
     handleCurrentChange (val) {
       this.pagination.pageNum = parseInt(val);
       this.getData();
+    },
+    changeLineInStr (str) {
+      return str.replace(/\n/g, '<br>');
     }
   },
   metaInfo: {

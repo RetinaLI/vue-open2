@@ -46,7 +46,7 @@ $allColor: #4475FD;
 //  border-color: transparent;
 //}
 .el-pagination.is-background .el-pager li:not(.disabled).active {
-  background-color: $allColor;
+  background-color: $allColor!important;
 }
 .is-top {
   margin-bottom: 0;

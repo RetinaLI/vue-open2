@@ -58,10 +58,10 @@ export default {
     &.on.user {
       background-image: url(./img/icon_user.png);
     }
-    &.on {
+    &.on, &:hover {
       color: #4475fd;
       background-color: #fff;
-      box-shadow: 0px 2px 4px 0px rgba(20, 30, 57, 0.1);
+      box-shadow: 0 4px 4px 0 rgba(77, 144, 245, 0.03);
     }
   }
 }

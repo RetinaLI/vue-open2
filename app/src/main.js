@@ -169,7 +169,7 @@ Vue.prototype.axios = axios;
 window.$ = $;
 
 /* eslint-disable no-new */
-new Vue({
+window.OpenApiApp = new Vue({
   el: '#app',
   router,
   store,

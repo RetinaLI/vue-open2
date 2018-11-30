@@ -59,9 +59,9 @@ export default {
   data () {
     return {
       bannerData: {
-        'bgImg': require('project-assets/images/solution/logistic/banner.jpg'),
-        'h3': '物流管控',
-        'p': '让物流运输过程透明，通过系统管控，实时预警+运输预警，提升物流运输整体质量 通过数据整合并依托大数据中心，开发覆盖贷前审核、贷后监控及风险处置全过程的金融服务车联网平台'
+        bgImg: require('project-assets/images/solution/logistic/banner.jpg'),
+        title: '物流管控',
+        text: '让物流运输过程透明，通过系统管控，实时预警+运输预警，提升物流运输整体质量 通过数据整合并依托大数据中心，开发覆盖贷前审核、贷后监控及风险处置全过程的金融服务车联网平台'
       },
       title: {
         logistic: {

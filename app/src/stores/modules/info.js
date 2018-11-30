@@ -1,6 +1,6 @@
 // import * as types from '../mutation-types'
 import Common from '@/lib/common';
-import infoService from '@/services/info';
+import InfoService from '@/services/info';
 
 const STORE_INFO_MUTATION_MAP = {
   UPDATE_ROOT_EMAIL: 'UPDATE_ROOT_EMAIL',
@@ -51,7 +51,7 @@ const actions = {
     } else {
       name = medths;
     }
-    let res = await infoService[name](data);
+    let res = await InfoService[name](data);
     Common.requestMsgHandler(res);
     return res;
   },

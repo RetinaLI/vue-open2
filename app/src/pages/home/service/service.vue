@@ -11,8 +11,8 @@
         <div class="top">
           <div class="txt">车辆数据共包含
             <span>{{ pagination.totalCount }}</span>项</div>
-          <div class="search">
-            <input type="text" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
+          <div class="search" ref="search">
+            <input type="text" @focus="getFocus" @blur="getBlur" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
             <span class="el-icon-search vc" @click="handleSearch"></span>
           </div>
         </div>
@@ -24,7 +24,7 @@
                 <span class="name text-overflow-single">{{ item.name }}</span>
                 <span class="free" v-if="item.price === 0">免费</span>
               </h6>
-              <p :class="{ 'text-overflow-multi': item.title.length > 68 }">{{ item.title }}</p>
+              <p :class="{ 'text-overflow-multi': item.title.length > 40 }">{{ item.title }}</p>
             </div>
             <div class="apply">
               <span v-if="item.applyStatus === 0" class="ing">审核中</span>
@@ -43,8 +43,8 @@
 </template>
 <script>
 import { ApiService } from '@/services/api.js';
-import Navbg from 'components/navbg/navbg';
 import { PassportService } from '@/services/passport.js';
+import Navbg from 'components/navbg/navbg';
 import ToastTip from '@/lib/message.js';
 import ServiceSideNav from 'components/serviceSideNav/serviceSideNav';
 import common from '@/lib/common.js';
@@ -77,12 +77,13 @@ export default {
   created () {
     this.getListApiType();
   },
-  computed: {
-    enCodeURIKeywords () {
-      return encodeURIComponent(this.keywords);
-    }
-  },
   methods: {
+    getFocus () {
+      this.$refs.search.style.width = `200px`;
+    },
+    getBlur () {
+      this.$refs.search.style = ``;
+    },
     sideNavHander (id) {
       this.apiType = id;
       this.pagination.pageNum = 1;
@@ -102,7 +103,7 @@ export default {
         'pageSize': this.pagination.pageSize,
         'pageNum': this.pagination.pageNum,
         'apiTypeId': this.apiType,
-        'name': this.enCodeURIKeywords
+        'name': this.keywords
       });
       this.apis = res.list;
       this.pagination.totalCount = res.count;
@@ -116,21 +117,29 @@ export default {
       let res = await this.apiService.getListApiType();
       if (Array.isArray(res) && res.length !== 0) {
         this.listApiType = res;
-        this.apiType = res[0].id;
+        this.apiType = this.$route.query.id || res[0].id;
         this.getData();
       }
     },
     async checkLogin (api) {
       this.userInfo = this.$store.getters.getCurrentUser;
       if (this.userInfo && this.userInfo.name) {
-        let confirm = await ToastTip.confirm({ content: '请确认购买此数据接口' });
-        if (confirm) {
-          let res = await this.apiService.applyData({ id: api.id });
-          common.requestMsgHandler(res);
-          if (res.code === 1) api.applyStatus = 0;
+        try {
+          let confirm = await ToastTip.confirm({ content: '请确认申请此数据接口吗？' });
+          if (confirm) {
+            let res = await this.apiService.applyData({ id: api.id });
+            common.requestMsgHandler(res);
+            if (res.code === 1) api.applyStatus = 0;
+          }
+        } catch (e) {
         }
       } else {
-        ToastTip.warn('请先登录！');
+        ToastTip.error('请先登录！');
+        let timer = setTimeout(() => {
+          clearTimeout(timer);
+          this.$router.push({path: this.passportService.getRedirectToLoginPath()});
+        }, 2000);
+        // this.$route.push({path: , query: to.fullfill})
       }
     }
   },
@@ -175,19 +184,20 @@ export default {
         position: relative;
         width: 50px;
         transition: width 0.3s;
-
+        border: 1px solid #aaa;
+        border-radius: 100px;
+        overflow: hidden;
         .ipt {
-          padding-left: 35px;
-          padding-right: 15px;
+          padding-left: 15px;
+          padding-right: 38px;
           width: 100%;
           height: 30px;
           line-height: 30px;
-          border: 1px solid #aaa;
-          border-radius: 100px;
         }
         .vc {
           width: 12px;
-          left: 17px;
+          left: auto;
+          right: 20px;
           z-index: 0;
           cursor: pointer;
         }
@@ -247,7 +257,7 @@ export default {
             margin-top: 5px;
             color: #aaa;
             font-size: 12px;
-            height: 50px;
+            height: 33px;
           }
         }
         .apply {

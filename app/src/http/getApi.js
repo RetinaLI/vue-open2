@@ -1,6 +1,7 @@
-import axios from 'axios'
+import axios from 'axios';
+
 // get获取方式
-function getApi(url, params) {
+function getApi (url, params) {
   // params: 传入数据
   return new Promise((resolve, reject) => {
     axios.get(url, {params})
@@ -8,9 +9,9 @@ function getApi(url, params) {
         resolve(res);
       })
       .catch((error) => {
-        reject(error)
-      })
-  })
+        reject(error);
+      });
+  });
 }
 
 export default getApi;

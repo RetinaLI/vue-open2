@@ -83,9 +83,9 @@ export default {
   data () {
     return {
       bannerData: {
-        'bgImg': require('project-assets/images/solution/finance/banner.jpg'),
-        'h3': '汽车金融',
-        'p': '车联网在金融环节应用，将提高客户违约成本，提升风险预判及处置能力，有效管控风险，实现风控模式转型。 通过数据整合并依托大数据中心，开发覆盖贷前审核、贷后监控及风险处置全过程的金融服务车联网平台'
+        bgImg: require('project-assets/images/solution/finance/banner.jpg'),
+        title: '汽车金融',
+        text: '车联网在金融环节应用，将提高客户违约成本，提升风险预判及处置能力，有效管控风险，实现风控模式转型。 通过数据整合并依托大数据中心，开发覆盖贷前审核、贷后监控及风险处置全过程的金融服务车联网平台'
       },
       title: {
         lock: {

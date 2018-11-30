@@ -61,10 +61,10 @@ export default {
           color: #4475fd;
         }
         &.ind:hover ~ .border {
-          left: 487px;
+          left: 483px;
         }
         &.pro:hover ~ .border {
-          left: 639px;
+          left: 638px;
         }
       }
       .border {
@@ -77,10 +77,10 @@ export default {
         transition: left 0.5s;
 
         &.industry {
-          left: 487px;
+          left: 483px;
         }
         &.products {
-          left: 639px;
+          left: 638px;
         }
       }
     }

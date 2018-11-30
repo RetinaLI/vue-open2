@@ -1,8 +1,6 @@
 import axiosApi from '@/http/axiosApi';
-import router from '@/router';
-import RouterService from './router';
+import RouterService from '@/services/router';
 import url from 'url';
-
 export class PassportService {
   routerService = new RouterService();
   loginPath = '';
@@ -10,9 +8,9 @@ export class PassportService {
   retrievePath = '';
 
   constructor () {
-    this.loginPath = this.routerService.getRoutePathByName('login');
-    this.registPath = this.routerService.getRoutePathByName('regist');
-    this.retrievePath = this.routerService.getRoutePathByName('retrieve');
+    this.loginPath = this.routerService.getRoutePathByName('login') || '';
+    this.registPath = this.routerService.getRoutePathByName('regist' || '');
+    this.retrievePath = this.routerService.getRoutePathByName('retrieve' || '');
   }
 
   async login (params) {
@@ -30,16 +28,17 @@ export class PassportService {
     return result;
   }
 
-  redirectToLogin (redirectUrl = router.history.current.fullPath) {
-    router.push({ path: this.getRedirectToLoginPath(redirectUrl) });
+  redirectToLogin (redirectUrl = OpenApiApp.$router.currentRoute.fullPath) {
+    OpenApiApp.$router.push({path: this.getRedirectToLoginPath(redirectUrl)});
   }
 
-  getRedirectToLoginPath (redirectUrl = router.history.current.fullPath) {
+  getRedirectToLoginPath (redirectUrl = OpenApiApp.$router.currentRoute.fullPath) {
     let redirectObj = url.parse(redirectUrl);
 
-    if (redirectObj.pathname !== this.loginPath && redirectObj.pathname !== this.registPath && redirectObj.pathname !== this.retrievePath) {
+    if (redirectObj.pathname !== this.loginPath && redirectObj.pathname !==
+      this.registPath && redirectObj.pathname !== this.retrievePath) {
       return `${this.loginPath}?redirect=${redirectUrl}`;
-    };
+    }
     return this.loginPath;
   }
 

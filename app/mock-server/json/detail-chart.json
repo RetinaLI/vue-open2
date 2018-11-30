@@ -1,66 +1,34 @@
 {
-  "data": {
-    "list": [
-      {
-        "xData": "08-01",
-        "yData": 50
-      },
-      {
-        "xData": "08-02",
-        "yData": 100
-      },
-      {
-        "xData": "08-03",
-        "yData": 200
-      },
-      {
-        "xData": "08-04",
-        "yData": 220
-      },
-      {
-        "xData": "08-05",
-        "yData": 40
-      },
-      {
-        "xData": "08-06",
-        "yData": 20
-      },
-      {
-        "xData": "08-07",
-        "yData": 80
-      },
-      {
-        "xData": "08-08",
-        "yData": 150
-      },
-      {
-        "xData": "08-09",
-        "yData": 100
-      },
-      {
-        "xData": "08-10",
-        "yData": 90
-      },
-      {
-        "xData": "08-11",
-        "yData": 500
-      },
-      {
-        "xData": "08-12",
-        "yData": 800
-      },
-      {
-        "xData": "08-13",
-        "yData": 900
-      },
-      {
-        "xData": "08-14",
-        "yData": 400
-      },
-      {
-        "xData": "08-15",
-        "yData": 1000
-      }
-    ]
-  }
+  "data": [
+    {
+      "usercount": 8,
+      "allmoney": 150,
+      "time": "2018-01"
+    },
+    {
+      "usercount": 98,
+      "allmoney": 950,
+      "time": "2018-02"
+    },
+    {
+      "usercount": 198,
+      "allmoney": 250,
+      "time": "2018-03"
+    },
+    {
+      "usercount": 98,
+      "allmoney": 450,
+      "time": "2018-04"
+    },
+    {
+      "usercount": 38,
+      "allmoney": 510,
+      "time": "2018-05"
+    },
+    {
+      "usercount": 98,
+      "allmoney": 505,
+      "time": "2018-06"
+    }
+  ]
 }

@@ -12,7 +12,7 @@
       </div>
       <div class="fl">
         <el-menu
-          :default-active="activeIndex"
+          :default-active="$route.path"
           class="el-menu-top"
           mode="horizontal"
           active-text-color="#fff"
@@ -24,7 +24,7 @@
           <el-menu-item class="menu-item item1" index="/service/index.html">
             数据服务
           </el-menu-item>
-          <el-submenu class="menu-item item2" index="/products/index.html" popper-class="sub-products elNavSubMenu">
+          <el-submenu class="menu-item item2" index="/products/index.html" popper-class="sub-products elNavSubMenu" :popper-append-to-body="false">
             <template slot="title">
               <span @click="diyMenu('sub-products')">车联网产品</span>
             </template>
@@ -47,9 +47,9 @@
               乘用车车联网平台
             </el-menu-item>
           </el-submenu>
-          <el-submenu class="menu-item item3" index="/solution.html" popper-class="sub-solutions elNavSubMenu">
+          <el-submenu class="menu-item item3" index="/solution.html" popper-class="sub-solutions elNavSubMenu" :popper-append-to-body="false">
             <template slot="title">
-              <span @click="diyMenu('sub-solutions')">车联网产品</span>
+              <span @click="diyMenu('sub-solutions')">解决方案</span>
             </template>
             <el-menu-item index="/solution/manage/index.html">
               车队管理
@@ -60,20 +60,20 @@
             <el-menu-item index="/solution/logistic/index.html">
               物流管控
             </el-menu-item>
-            <el-menu-item index="/solution/service/index.html">
+            <el-menu-item index="/solution/sell/index.html">
               经销/服务商
             </el-menu-item>
           </el-submenu>
           <el-menu-item class="menu-item item4" index="/dynamic/industry/index.html">
             行业&amp;产品动态
           </el-menu-item>
-          <div class="border"></div>
+          <div class="border" :class="[`pos${num}`, {white: (num === 1 || num === 4)}]"></div>
         </el-menu>
       </div>
     </div>
     <div class="operation clearfix">
       <div>
-        <router-link to="/console/index.html" tag="span" class="ctrl">控制台</router-link>
+        <router-link to="/console/index.html" v-if="getCurrentUser.name" tag="span" class="ctrl">控制台</router-link>
         <div v-if="!getCurrentUser.name" class="logins">
           <a tag="div" class="login" index="login" @click="toLogin">
             登录
@@ -100,19 +100,17 @@ export default {
   data () {
     return {
       passportService: new PassportService(),
-      activeIndex: '',
-      elMenuIndexs: ['/index.html', '/service/index.html', '/products/index.html', '/solution/manage/index.html', '/dynamic/industry/index.html'],
       isRouter: true,
       menus: {
-        'index': 0,
-        'service': 1,
-        'serviceDetail': 1,
-        'products': 2,
-        'cars': 2,
-        'solution': 3,
-        'dynamic': 4
+        index: 0,
+        service: 1,
+        serviceDetail: 1,
+        products: 2,
+        cars: 2,
+        solution: 3,
+        dynamic: 4
       },
-      login: false
+      num: 0
     };
   },
   computed: {
@@ -126,27 +124,20 @@ export default {
   methods: {
     initBorderPos () {
       // 注意这里用的是name
-      let p = this.$route.name;
-      let n = 0;
+      let name = this.$route.name;
       let menus = this.menus;
       for (let x in menus) {
-        if (p.indexOf(x) > -1) {
-          n = menus[x];
+        if (name.indexOf(x) > -1) {
+          this.num = menus[x];
           break;
         }
       }
-      $('.top-bar .border').removeClass('pos0 pos1 pos2 pos3 pos4').addClass('pos' + n);
-      if (n === 4 || n === 1) {
-        $('.top-bar .border').addClass('white');
-      } else {
-        $('.top-bar .border').removeClass('white');
-      }
-      this.activeIndex = this.elMenuIndexs[n];
     },
     toLogin () {
       this.passportService.redirectToLogin();
     },
     diyMenu (cla) {
+      // 二级菜单 模拟点击
       $('.' + cla).find('li').first().trigger('click');
     }
   },
@@ -173,7 +164,10 @@ export default {
   position: relative;
   color: rgba(255, 255, 255, 1);
   .logobox {
-    margin-right: 185px;
+    margin-right: 16%;
+    @media screen and (max-width: 1345px) {
+      margin-right: 9%;
+    }
     .logo > img {
       transform: translateY(1px);
       height: 20px;
@@ -290,6 +284,11 @@ export default {
       border: 1px solid rgba(277, 277, 277, 0.6);
       border-radius: 2px;
       @extend .font14;
+      transition: all .3s;
+      &:hover {
+        background: #1f55ec;
+        border-color: #1f55ec;
+      }
     }
     .line {
       margin-left: 12px;
@@ -333,10 +332,43 @@ export default {
     left: 206px;
   }
   .pos3 {
-    left: 315px;
+    left: 309px;
   }
   .pos4 {
-    left: 440px;
+    left: 423px;
+  }
+}
+
+// 顶部导航二级菜单样式
+.top-bar {
+  min-width: 1200px;
+}
+.top-bar /deep/ .elNavSubMenu  {
+  background-color: #fff !important;
+  box-shadow:0px 4px 12px 0px rgba(0,0,0,0.1);
+  min-width: 20px;
+  &.sub-products {
+    transform: translateX(-19px);
+  }
+  &.sub-solutions {
+    transform: translateX(-6px);
+  }
+  ul {
+    min-width: 20px;
+    li {
+      min-width: 20px;
+      font-size: 12px;
+      color: #666;
+      text-align: left;
+      padding: 0 20px !important;
+      &:hover {
+        color: #4475FD !important;
+        background-color: transparent!important;
+      }
+      &.is-active {
+        color: #4475FD !important;
+      }
+    }
   }
 }
 </style>

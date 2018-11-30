@@ -2,15 +2,15 @@
   <div class="box">
     <navbg></navbg>
     <div class="content wrap clearfix">
-      <service-side-nav v-bind:navData="listApiType" v-bind:currentNav="apiType"></service-side-nav>
+      <service-side-nav v-bind:navData="listApiType" v-bind:currentNav="apiType" @sideNavClick="sideNavHander"></service-side-nav>
       <div class="api fl">
         <div class="detail" id="markdown"></div>
       </div>
       <div class="buy-box fr">
         <h3>{{ api.name }}</h3>
-        <p class="abstract">{{ api.abstract }}</p>
+        <p class="abstract">{{ api.abstract}}</p>
         <p class="price">
-          <span class="money">{{ '￥' + api.price }}</span>
+          <span class="money">￥{{ api.price || 0 }}</span>
           <span class="count">/次</span>
         </p>
         <p class="limit">每月上限{{ api.monthlyCapPrice }}元</p>
@@ -99,6 +99,9 @@ export default {
       } else {
         ToastTip.warn('请先登录！');
       }
+    },
+    sideNavHander (id) {
+      this.$router.push({path: '/service/index.html', query: {id}});
     }
   },
   metaInfo: {
@@ -111,6 +114,9 @@ export default {
 
 .box {
   background-color: #f6f9fc;
+}
+.navbg {
+  margin-bottom: 14px !important;
 }
 .api {
   margin-left: 20px;

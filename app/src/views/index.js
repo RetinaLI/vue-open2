@@ -1,7 +1,7 @@
 /**
  * 用于:引入单个页面组件 - 实现懒加载
  */
-export const OpsLayout = () => import('@/components/ops-layout');
+// export const OpsLayout = () => import('@/components/ops-layout');
 export const StaticLayout = () => import('@/components/static-layout');
 export const homeIndex = () => import('@/pages/home/index');
 export const homeProducts = () => import('@/pages/home/products');
@@ -27,6 +27,7 @@ export const conIndex = () => import('@/pages/console/index');
 export const conData = () => import('@/pages/console/data/data');
 export const conDetail = () => import('@/pages/console/data/detail');
 export const conApplyList = () => import('@/pages/console/data/apply-list');
+export const conCarList = () => import('@/pages/console/data/car-list');
 export const conPersonalInfo = () => import('@/pages/console/personal/info');
 export const conPersonalRealAuth = () => import('@/pages/console/personal/real-auth');
 export const conPersonalBalance = () => import('@/pages/console/personal/balance');

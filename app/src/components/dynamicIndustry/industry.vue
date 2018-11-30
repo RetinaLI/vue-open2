@@ -7,7 +7,7 @@
             <img class="vhc" :src="item.photoPath" alt="">
           </div>
           <div>
-            <h5 :class="{'text-overflow-multi': item.title.length >= 34 }">{{ item.title }}</h5>
+            <h5 class="text-overflow-single">{{ item.title }}</h5>
             <p>{{ item.created }}</p>
           </div>
         </a>
@@ -29,7 +29,7 @@ export default {
       industry: [],
       pagination: {
         totalCount: 0,
-        pageSize: 20,
+        pageSize: 15,
         pageNum: 1
       }
     };
@@ -68,7 +68,7 @@ export default {
   & > div {
     margin: 10px 6px;
     width: 380px;
-    height: 374px;
+    // height: 374px;
     border: 1px solid #eee;
     background-color: #fff;
     &:hover {
@@ -76,7 +76,7 @@ export default {
     }
     & .img {
       position: relative;
-      width: 380px;
+      width: 378px;
       height: 252px;
       overflow: hidden;
       img {
@@ -98,13 +98,13 @@ export default {
     }
     & a div {
       padding: 14px;
-      height: 122px;
+      height: 88px;
       position: relative;
       h5 {
         font-size: 16px;
         color: #111;
         line-height: 28px;
-        height: 56px;
+        height: 28px;
       }
       p {
         position: absolute;

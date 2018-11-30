@@ -23,7 +23,6 @@ import ValidateFactory from '@/lib/validate';
 import ToastTip from '@/lib/message.js';
 import { getUrlConfig } from '@/http/http.url.config';
 import { PassportService } from '@/services/passport';
-let passportService = new PassportService();
 
 export default {
   name: 'RetrieveStep1',
@@ -61,7 +60,7 @@ export default {
     submitForm () {
       this.$refs.ruleForm1.validate(async (valid) => {
         if (valid) {
-          let res = await passportService.retrievePassword({
+          let res = await this.passportService.retrievePassword({
             queryInfo: this.ruleForm1.account,
             zk_captcha: this.ruleForm1.checkCode
           });

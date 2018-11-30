@@ -58,17 +58,17 @@ export default {
           name: '账户信息',
           path: '/console/info/index.html'
         },
-        // {
-        //   name: '我的消息',
-        //   path: '/console/news'
-        // },
+        {
+          name: '我的消息',
+          path: '/console/news/index.html'
+        },
         {
           name: '我的余额',
           path: '/console/balance/index.html'
         }
 
-      ],
-      getNewsLength: 0
+      ]
+      // getNewsLength: 0
     };
   },
   props: {
@@ -79,13 +79,11 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'getCurrentUser'
+      'getCurrentUser',
+      'getNewsLength'
     ])
   },
   methods: {
-    // ...mapActions([
-    //   'getNewsList'
-    // ]),
     showInfo () {
       if (this.timers) {
         clearTimeout(this.timers);
@@ -109,10 +107,16 @@ export default {
       } else {
         window.location.href = '/index.html';
       }
+    },
+    getList () {
+      this.$store.dispatch('getNewsList', {
+        pageNum: 1,
+        pageSize: 10
+      });
     }
   },
   mounted: function () {
-    // this.getNewsList(this.$route.query.page);
+    this.getList();
   }
 };
 </script>

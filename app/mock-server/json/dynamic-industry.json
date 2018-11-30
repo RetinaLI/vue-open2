@@ -11,17 +11,17 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
         "id": 2,
         "title": "哔哔哔哔哔哔哔哔哔哔哔哔哔哔哔哔哔不不哔哔哔哔哔哔哔哔哔哔哔不不哔哔哔哔哔哔哔哔哔哔哔不不哔哔哔哔哔哔哔哔哔哔哔不不哔哔哔哔哔不不",
-        "content": "内容简介内容简介内容简介内容简介内容简介",
+        "content": "本次发布版本号为V2.2，本次主要新增18项功能，优化32项。\n新接口：增加了福田E家APP接口、OTA远程升级接口和蓄电池状态接口\n新功能：新增了支付宝在线支付功能，短信验证功能，下线调试，蓄电池监控，风险管控， 在途监控等功能\n新平台：上线供应商（康明斯）展示平台，升级车联网展示平台\n新优化：优化了实时监控功能、驾驶行为功能、服务站/配货站/加油站监控功能、离线车辆、服务真实性功能，故障处理功能",
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -31,7 +31,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -41,7 +41,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -51,7 +51,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -61,7 +61,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -71,7 +71,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -81,7 +81,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -91,7 +91,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -101,7 +101,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -111,7 +111,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -121,7 +121,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       },
       {
@@ -131,7 +131,7 @@
         "operator": "福田智科",
         "type": "product",
         "created": "2018年7月16日",
-        "photoPath": "/static/dynamic.jpg",
+        "photoPath": "/static/dynamic.png",
         "link": "https://www.baidu.com"
       }
     ]

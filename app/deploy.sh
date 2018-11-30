@@ -7,6 +7,8 @@ function check_result(){
   fi
 }
 
+port=$1;
+
 rm -rf dist/*;
 
 npm run build;
@@ -14,14 +16,20 @@ check_result $?;
 
 cp -rf src/40* src/500.html dist/;
 
-rm -rf /data/projects/foton/iov-web-api/src/*;
-check_result $?;
+if [[ "$port" != "200" ]]; then
 
-cp -rf dist/* /data/projects/foton/iov-web-api/src/;
-check_result $?;
+  rm -rf ../../../iov-web-api/src/*;
+  check_result $?;
 
-cd /data/projects/foton/iov-web-api;
-git add -A;
-git commit -m "update";
-git push;
-check_result $?;
+  cp -rf dist/* ../../../iov-web-api/src/;
+  check_result $?;
+
+  cd ../../../iov-web-api;
+  git add -A;
+  git commit -m "update";
+  git push;
+  check_result $?;
+else
+  scp -r ../../../iov-web-api/src/* devops@10.100.2.200:/data/platform-api-server/
+fi
+

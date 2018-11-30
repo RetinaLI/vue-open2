@@ -11,9 +11,16 @@
       </div>
       <span class="font14">{{navShow.current}}</span>
     </div>
-    <router-link :to="btnShow.path" tag="div" v-if="btnShow.path.length > 0">
+    <router-link :to="btnShow.path" tag="div" v-if="btnShow.path && btnShow.title">
       <el-button type="primary" size="mini">{{btnShow.title}}</el-button>
     </router-link>
+    <el-button
+      type="primary"
+      size="mini"
+      v-if="btnShow.title && !btnShow.path && !btnShow.auth"
+      @click="anyMethod"
+    >{{btnShow.title}}
+    </el-button>
   </div>
 </template>
 
@@ -33,10 +40,7 @@ export default {
                 title: ''
               }]
           },
-          current: {
-            type: String,
-            default: ''
-          }
+          current: ''
         };
       }
     },
@@ -44,16 +48,16 @@ export default {
       type: Object,
       default: () => {
         return {
-          title: {
-            type: String,
-            default: ''
-          },
-          path: {
-            type: String,
-            default: ''
-          }
+          title: '',
+          path: '',
+          auth: false
         };
       }
+    }
+  },
+  methods: {
+    anyMethod () {
+      this.$emit('onAnyMethod');
     }
   }
 };

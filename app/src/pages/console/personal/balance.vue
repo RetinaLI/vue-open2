@@ -28,7 +28,7 @@
                       :prop="item.prop[i]"
                       :key="i"
                       :width="[ i > 0 ? '' : '120px' ]"
-                      :align="( i > 0 ? 'left' : 'center' )"
+                      :align="`center`"
                       class="tabs"
                     >
                     </el-table-column>
@@ -56,6 +56,7 @@
 import ConBreadCrumbs from '@/components/console/con-bread-crumbs/index';
 import ConBlock from '@/components/console/con-block/con-block';
 import { BalanceService } from '@/services/balance';
+import ToastTip from '../../../lib/message';
 
 let balanceService = new BalanceService();
 export default {
@@ -77,16 +78,16 @@ export default {
         {
           name: '充值记录',
           bindName: 'pay',
-          title: ['序号', '充值金额（元）', '充值方式', '充值时间'],
-          prop: ['count', 'cost', 'way', 'date'],
+          title: ['序号', '充值时间', '充值金额（元）', '充值方式'],
+          prop: ['count', 'tradeTime', 'money', 'payWayType'],
           data: [],
           total: 0
         },
         {
           name: '消费记录',
           bindName: 'cost',
-          title: ['日期', '消费金额（元）', '调用接口个数', '调用总次数'],
-          prop: ['date', 'cost', 'count', 'all'],
+          title: ['序号', '消费时间', '消费金额（元）', '调用接口次数'],
+          prop: ['count', 'tradeTime', 'money', 'apiCount'],
           data: [],
           total: 0
         }
@@ -129,34 +130,59 @@ export default {
     async getTabData () {
       // 获取tab栏数据
       let {page = 1, type = 'pay'} = this.$route.query;
+      let typeNum = 1;
       // 修改tab默认显示
       this.activeName = type;
       if (type === 'pay') {
+        typeNum = 1;
         this.payPage = page;
-        let {data = [], totalCount = 0} = await balanceService.getTabPay({
-          pageSize: 10,
-          pageNum: page
-        });
-        this.tabs[0].data = data;
-        this.tabs[0].total = totalCount;
+        // let {data = [], totalCount = 0} = await balanceService.getTabPay({
+        //   pageSize: 10,
+        //   pageNum: page
+        // });
+        // this.tabs[0].data = data;
+        // this.tabs[0].total = totalCount;
       } else if (type === 'cost') {
+        typeNum = 2;
         this.costPage = page;
-        let {data = [], totalCount = 0} = await balanceService.getTabCost({
-          pageSize: 10,
-          pageNum: page
+      }
+      let {data = [], totalCount = 0, code, message} = await balanceService.getTabPay({
+        type: typeNum,
+        pageSize: 10,
+        pageNum: page
+      });
+      if (code === 1) {
+        this.tabs[typeNum - 1].data = data.sort((a, b) => {
+          return (new Date(b.tradeTime).getTime() - new Date(a.tradeTime).getTime());
+        }).map((ele, i) => {
+          if (ele.payWayType === 'ALIPAY') {
+            ele.payWayType = '支付宝';
+          }
+          if (type === 'cost') {
+            ele.tradeTime = ele.tradeTime.replace(/\s.+/, '');
+          }
+          // if (ele.createdDate) {
+          //   ele.createdDate = ele.createdDate.split(' ')[0];
+          // } else {
+          //   ele.createdDate = '暂无';
+          // }
+          return Object.assign(ele, {
+            count: i + 1
+          });
         });
-        this.tabs[1].data = data;
-        this.tabs[1].total = totalCount;
+        this.tabs[typeNum - 1].total = totalCount;
+      } else {
+        ToastTip.error(message);
       }
     },
     async getTop () {
       // 获取顶部数据
-      let {yesterdayConsumeSum = 0, money = 0, monthRechargeSum = 0, monthConsumeSum = 0} = await balanceService.getTop();
+      let {yesterdayConsume = 0, money = 0, rechargeByMonth = 0, monthConsume = 0} = await balanceService.getTop();
       // console.log(yuE, cost, pay, mouthCost);
       this.block[0].num = money;
-      this.block[1].num = yesterdayConsumeSum;
-      this.block[2].num = monthRechargeSum;
-      this.block[3].num = monthConsumeSum;
+      this.block[1].num = yesterdayConsume;
+      this.block[2].num = rechargeByMonth;
+      this.block[3].num = monthConsume;
     }
   },
   mounted: function () {

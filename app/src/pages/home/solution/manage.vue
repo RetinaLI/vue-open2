@@ -101,9 +101,9 @@ export default {
   data () {
     return {
       bannerData: {
-        'bgImg': require('project-assets/images/solution/manage/banner.jpg'),
-        'h3': '车队管理',
-        'p': '车队管理可以帮助企业在成本管理、安全管理上对物流、司机进行有效的管控，从而提升物流效率并且最大化收益'
+        bgImg: require('project-assets/images/solution/manage/banner.jpg'),
+        title: '车队管理',
+        text: '车队管理可以帮助企业在成本管理、安全管理上对物流、司机进行有效的管控，从而提升物流效率并且最大化收益'
       },
       carouselTitle: [
         {

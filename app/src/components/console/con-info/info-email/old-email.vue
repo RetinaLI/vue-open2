@@ -4,7 +4,7 @@
     :rules="oldEmailRules"
     ref="oldEmailForm"
     label-width="100px"
-    class="con-form">
+    class="con-form oldForm">
     <el-form-item
       label="邮箱 :"
       prop="email"
@@ -26,8 +26,8 @@
       <span class="danger font12 code-info" v-show="getOldCode.disabled">验证码发送成功，请在 {{getTimes > 60 ? `${Math.floor(getTimes/60)}分钟` : `${getTimes}秒`}}内输入验证码</span>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click.prevent="submitOldEmailForm" size="mini">确认</el-button>
-      <el-button @click="cancelOldEmailForm" size="mini">取消</el-button>
+      <el-button type="primary" @click.prevent="submitOldEmailForm" class="save" size="mini">确认</el-button>
+      <el-button @click="cancelOldEmailForm" class="cancle" size="mini">取消</el-button>
     </el-form-item>
   </el-form>
 </template>

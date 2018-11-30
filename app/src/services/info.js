@@ -1,52 +1,50 @@
 import axiosApi from '@/http/axiosApi';
 
 class InfoService {
-  async getInfo () {
+  static async getInfo () {
     let {data} = await axiosApi('getInfo');
     return data;
   }
 
-  async getCode () {
+  static async getCode () {
     let data = await axiosApi('getInfoCode');
     return data;
   }
 
-  async getInfoToken () {
+  static async getInfoToken () {
     let data = await axiosApi('getInfoToken');
     return data;
   }
 
-  async postEmail (email) {
+  static async postEmail (email) {
     let data = await axiosApi('postEmail', email);
     return data;
   }
 
-  async postOldCode (code) {
+  static async postOldCode (code) {
     let data = await axiosApi('postOldCode', code);
     return data;
   }
 
-  async postNewCode (email) {
+  static async postNewCode (email) {
     let data = await axiosApi('postNewCode', email);
     return data;
   }
 
-  async postName (name) {
+  static async postName (name) {
     let data = await axiosApi('postName', name);
     return data;
   }
 
-  async postImg (formData) {
+  static async postImg (formData) {
     let data = await axiosApi('postImg', formData);
     return data;
   }
 
-  async modifyAvatar (params) {
+  static async modifyAvatar (params) {
     let data = await axiosApi('modifyAvatar', params);
     return data;
   }
 }
 
-let infoService = new InfoService();
-
-export default infoService;
+export default InfoService;

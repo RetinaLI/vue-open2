@@ -103,9 +103,9 @@ export default {
   data () {
     return {
       banner: {
-        'bgImg': require('project-assets/images/solution/banner.jpg'),
-        'h3': '经销/服务商车联网系统',
-        'p': '精准市场预测、准确库存管理、优化服务流程'
+        bgImg: require('project-assets/images/solution/banner.jpg'),
+        title: '经销/服务商车联网系统',
+        text: '精准市场预测、准确库存管理、优化服务流程'
       }
     };
   },

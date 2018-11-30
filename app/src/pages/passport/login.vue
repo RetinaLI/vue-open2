@@ -54,10 +54,13 @@ export default {
     };
   },
   created () {
-    let url = getUrlConfig('getIdentifyCodeUrl').url;
-    this.imgurl = `${url}?t=` + (Date.now());
+    this.reGetCode();
   },
   methods: {
+    // getCodeUrl () {
+    //   let url = getUrlConfig('getIdentifyCodeUrl').url;
+    //   this.imgurl = `${url}?t=` + (Date.now());
+    // },
     submitForm () {
       this.$refs.ruleForm2.validate(async (valid) => {
         if (valid) {
@@ -74,6 +77,7 @@ export default {
               document.location.href = redirect;
             }, 2000);
           } else {
+            this.reGetCode();
             if (message) {
               ToastTip.error(message, 1000);
             } else {
@@ -256,6 +260,7 @@ export default {
     border-radius: 20px;
     background: #4475FD;
     font-weight: bold;
+    border-color: #4475fd;
   }
   .box-right{
     float: right;

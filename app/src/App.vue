@@ -5,16 +5,16 @@
 <script>
 export default {
   name: 'App',
-  data () {
-    return {};
-  },
   /* metaInfo: {
     title: '数据开放平台'
   }, */
-  beforeCreate () {
+  methods: {
+    logined () {
+      this.$store.dispatch('initCurrentUser');
+    }
   },
-  async created () {
-    await this.$store.dispatch('initCurrentUser');
+  created () {
+    this.logined();
   }
 };
 </script>

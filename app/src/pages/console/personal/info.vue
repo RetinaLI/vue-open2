@@ -2,16 +2,16 @@
   <section class="con-info">
     <div class="con-info-user padTop">
       <!--<h3 class="con-info-user-title">账户信息</h3>-->
-      <div class="con-info-part">
+      <div class="con-info-part baseinfo">
         <ConTitle
           :title="title[0]"
           :isShow="true"
           :changeInfo="changeInfo"
           @changeInfoHandle="changeInfoHandle('changeInfo')"
         />
-        <ConInfoUser :changeInfo="changeInfo"/>
+        <ConInfoUser :changeInfo="changeInfo" ref="infoUser"/>
       </div>
-      <div class="con-info-part">
+      <div class="con-info-part baseEmail">
         <ConTitle
           :title="title[1]"
           :isShow="true"
@@ -20,7 +20,7 @@
         />
         <ConEmail :changeEmail="changeEmail" ref="emails"/>
       </div>
-      <div class="con-info-part">
+      <div class="con-info-part baseToken">
         <con-title :title="title[2]"/>
         <el-form
           label-width="100px"
@@ -29,10 +29,17 @@
             label="当前token :"
           >
             <span class="con-email con-info-dep-code">{{getCurrentUser.token || '暂无'}}</span>
-            <el-button type="primary" v-show="getCurrentUser.token" plain size="mini" class="con-info-dep-code-btn" @click="resetToken">重置</el-button>
+            <el-button
+              type="primary"
+              v-show="getCurrentUser.token"
+              plain size="mini"
+              class="con-info-dep-code-btn"
+              @click="resetToken"
+              :disabled="tokenBtn.disabled">{{tokenBtn.text}}
+            </el-button>
           </el-form-item>
         </el-form>
-        <p class="con-info-dep-danger danger">*** 开发者token是校验开发者身份的密码，具有极高的安全性。切记勿把密码直接交给第三方开发者或直接存储在代码中</p>
+        <p class="con-info-dep-danger danger">*** 开发者token是校验开发者身份的密码，具有极高的安全性。切记勿把密码直接交给第三方开发者或直接存储在代码中<br/>*** 每月只能重置一次token</p>
       </div>
     </div>
   </section>
@@ -40,8 +47,9 @@
 
 <script>
 import ToastTip from '@/lib/message';
-import infoService from '@/services/info';
+import InfoService from '@/services/info';
 import { mapGetters } from 'vuex';
+import { setLocalStorage, getLocalStorage, removeStorage } from '@/lib/sessionStorage';
 
 import ConTitle from '@/components/console/con-info-title/con-info-title';
 import ConInfoUser from '@/components/console/con-info/info-user/index';
@@ -54,7 +62,7 @@ export default {
   },
   data () {
     return {
-      title: ['个人信息', '绑定的邮箱', '开放者信息'],
+      title: ['个人信息', '绑定的邮箱', '开发者信息'],
       changeInfo: {
         changed: false,
         title: '修改'
@@ -62,7 +70,12 @@ export default {
       changeEmail: {
         changed: false,
         title: '修改'
-      }
+      },
+      tokenBtn: {
+        text: '重置',
+        disabled: false
+      },
+      tokenTimes: null
     };
   },
   computed: {
@@ -77,19 +90,70 @@ export default {
       }
       this[type].changed = true;
       this[type].title = '编辑中...';
+      if (type === 'changeInfo' && this.changeInfo.changed) {
+        this.$refs.infoUser.infoFormValue();
+      }
       if (type === 'changeEmail' && this.changeEmail.changed) {
         this.$store.dispatch('getOldCodeHander', this.getCurrentUser.email);
       }
     },
-    async resetToken () {
-      let {code, data, message} = await infoService.getInfoToken();
-      if (code === 1) {
-        this.$store.commit('UPDATE_TOKEN', data.token);
-        ToastTip.success(message);
+    tokenTime () {
+      if (getLocalStorage(this.getCurrentUser.username)) {
+        this.tokenBtn.disabled = true;
+        this.tokenBtn.text = `本月已重置`;
+        let times = parseInt(getLocalStorage(this.getCurrentUser.username));
+        if (times !== new Date().getMonth()) {
+          this.tokenBtn.text = '重置';
+          this.tokenBtn.disabled = false;
+          removeStorage(this.getCurrentUser.username);
+          // clearInterval(this.tokenTimes);
+        } else {
+          setLocalStorage(this.getCurrentUser.username, times);
+        }
+        // this.tokenTimes = setInterval(() => {
+        //   times--;
+        //   this.tokenBtn.text = `请${times}秒,再次重置`;
+        //   if (times <= 0) {
+        //     this.tokenBtn.text = '重置';
+        //     this.tokenBtn.disabled = false;
+        //     removeStorage('times');
+        //     clearInterval(this.tokenTimes);
+        //   } else {
+        //     setStorage('times', times);
+        //   }
+        // }, 1000);
       } else {
-        ToastTip.warn(message);
+        // clearInterval(this.tokenTimes);
+        this.tokenBtn.disabled = false;
+        this.tokenBtn.text = '重置';
       }
+    },
+    resetToken () {
+      ToastTip.confirm({
+        content: '重置token会导致正在使用的token过期，确认重置吗？'
+      })
+        .then(async () => {
+          // setStorage('times', 60);
+          setLocalStorage(this.getCurrentUser.username, new Date().getMonth());
+          this.tokenTime();
+          let {code, data, message} = await InfoService.getInfoToken();
+          if (code === 1) {
+            this.$store.commit('UPDATE_TOKEN', data.token);
+            ToastTip.success(message);
+          } else {
+            this.tokenBtn.text = '重置';
+            this.tokenBtn.disabled = false;
+            // clearInterval(this.tokenTimes);
+            removeStorage(this.getCurrentUser.username);
+            ToastTip.warn(message);
+          }
+        })
+        .catch(() => {
+        });
     }
+  },
+  mounted: function () {
+    this.tokenTime();
   },
   components: {
     ConTitle,
@@ -101,6 +165,7 @@ export default {
 
 <style scoped lang="scss">
   $iconHeight: 80px;
+  $color: #4475FD;
 
   .con-info {
     .con-info-part {
@@ -144,5 +209,8 @@ export default {
 
   .el-input {
     width: 300px;
+  }
+  .reset {
+    color: $color!important;
   }
 </style>

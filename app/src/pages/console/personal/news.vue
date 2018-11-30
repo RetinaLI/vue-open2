@@ -4,14 +4,18 @@
     <div class="con-info-user">
       <div class="con-news">
         <el-collapse>
-          <el-collapse-item :name="i + 1" :key="i" v-for="(item, i) in getNews.data">
-            <template slot="title">
-              <span class="con-news-title">{{item.title}}</span>
-              <i class="icon-news" v-if="item.news"></i>
-              <span class="con-news-date">{{item.date}}</span>
-            </template>
-            <div class="con-news-content">{{item.content}}</div>
-          </el-collapse-item>
+          <div class="con-news-line" v-for="(item, i) in getNews.data"
+               :key="i"
+               @click="readNews(item.id, item.isRead)">
+            <el-collapse-item :name="i + 1">
+              <template slot="title">
+                <span class="con-news-title">{{item.title}}</span>
+                <i class="icon-news" v-if="item.isRead === 0"></i>
+                <span class="con-news-date">{{item.sendTime.split(' ')[0]}}</span>
+              </template>
+              <div class="con-news-content">{{item.content}}</div>
+            </el-collapse-item>
+          </div>
         </el-collapse>
         <div class="con-news-pages" v-if="getNews.total > 10">
           <el-pagination
@@ -29,7 +33,9 @@
 
 <script>
 import ConBreadCrumbs from '@/components/console/con-bread-crumbs/index';
-// import {mapGetters, mapActions} from 'vuex';
+import { mapGetters } from 'vuex';
+import NewsService from '@/services/news';
+let newsService = new NewsService();
 export default {
   name: 'news',
   data () {
@@ -42,36 +48,43 @@ export default {
           }
         ],
         current: '我的消息'
-      },
-      getNews: {
-        total: 0,
-        data: []
       }
     };
   },
   computed: {
     getCurrentPage () {
       return Number(this.$route.query.page);
-    }
-    // ...mapGetters([
-    //   'getNews'
-    // ])
+    },
+    ...mapGetters([
+      'getNews'
+    ])
   },
   watch: {
     '$route' () {
-      // this.getNewsList(this.$route.query.page);
+      this.getList();
     }
   },
   methods: {
-    // ...mapActions([
-    //   'getNewsList'
-    // ]),
     pageChangeHandle (val) {
       // 将路由跳转到对应id的知识点
       this.$router.push({path: '/console/news/index.html', query: {page: val}});
+    },
+    async readNews (id, isRead) {
+      if (isRead === 1) return false;
+      let {code} = await newsService.postNews({id});
+      if (code === 1) {
+        this.$store.commit('NEWS_IS_READ', id);
+      }
+    },
+    getList () {
+      this.$store.dispatch('getNewsList', {
+        pageNum: this.$route.query.page || 1,
+        pageSize: 10
+      });
     }
   },
   mounted: function () {
+    this.getList();
   },
   components: {
     ConBreadCrumbs
@@ -81,14 +94,23 @@ export default {
 
 <style scoped lang="scss">
   $news: '~@/assets/images/balance/new.png';
+  /deep/ .el-collapse-item__header {
+    border-bottom: none;
+  }
   .con-news {
     padding: 30px 50px 0;
+    .con-news-line {
+      border-bottom: 2px solid #ebeef5;
+      &:nth-last-child(1) {
+        border-bottom: none;
+      }
+    }
     .el-collapse {
-      border-top: none;
+      border: none;
     }
     .icon-news {
-      width: 35px;
-      height: 20px;
+      width: 26px;
+      height: 17px;
       display: inline-block;
       vertical-align: middle;
       background: url($news) no-repeat;
@@ -97,9 +119,11 @@ export default {
       transform: rotate(-30deg);
     }
     .con-news-title {
-      width: 400px;
+      color: #666;
+      max-width: 560px;
       display: inline-block;
-      font-size: 16px;
+      font-size: 12px;
+      font-weight: bold;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;

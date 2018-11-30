@@ -1,7 +1,7 @@
 <template>
   <div>
-    <DefaultEmail v-show="!changeEmail.changed"/>
-    <ChangeEmail v-show="changeEmail.changed"/>
+    <DefaultEmail class="view-wrapper" v-show="!changeEmail.changed"/>
+    <ChangeEmail class="edit-wrapper" v-show="changeEmail.changed"/>
   </div>
 </template>
 

@@ -11,10 +11,10 @@
       :defaultActive="getPath"
       textColor="#ccc"
     >
-      <!-- <el-menu-item index="/console/index.html">
+      <el-menu-item index="/console/index.html">
         <i class="icon icon-look"></i>
         数据看板
-      </el-menu-item> -->
+      </el-menu-item>
       <el-submenu index="/console/data/index.html">
         <template slot="title">
           <i class="icon icon-data"></i>
@@ -22,6 +22,7 @@
         </template>
         <el-menu-item index="/console/data/index.html">我的数据</el-menu-item>
         <el-menu-item index="/console/apply_list/index.html">申请数据</el-menu-item>
+        <el-menu-item index="/console/car_list/index.html" v-if="showCar">我的车辆</el-menu-item>
       </el-submenu>
       <el-submenu index="/console/info/index.html">
         <template slot="title">
@@ -30,7 +31,7 @@
         </template>
         <el-menu-item index="/console/info/index.html">账号信息</el-menu-item>
         <el-menu-item index="/console/auth/index.html">实名认证</el-menu-item>
-        <!--<el-menu-item index="/console/balance/index.html">我的余额</el-menu-item>-->
+        <el-menu-item index="/console/balance/index.html">我的余额</el-menu-item>
       </el-submenu>
     </el-menu>
   </div>
@@ -38,22 +39,39 @@
 
 <script>
 import logo from '@/assets/logo.png';
+import AuthService from '@/services/auth';
 
 export default {
   name: 'conNav',
   data () {
     return {
-      logo
+      logo,
+      showCar: false
     };
   },
   computed: {
     getPath () {
       if (this.$route.path === '/console/pay/index.html') {
         return '/console/balance/index.html';
+      } else if (this.$route.path === '/console/data/detail/index.html') {
+        return '/console/data/index.html';
       } else {
         return this.$route.path;
       }
     }
+  },
+  methods: {
+    async showCarList () {
+      let auth = await AuthService.getAuth();
+      if (auth.authStatus === 1 && auth.payType === 1) {
+        this.showCar = true;
+      } else {
+        this.showCar = false;
+      }
+    }
+  },
+  mounted: function () {
+    this.showCarList();
   }
 };
 </script>

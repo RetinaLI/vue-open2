@@ -36,7 +36,7 @@ const HTTP_URL_MAP = {
     isList: false
   },
   'login': {
-    url: '/api/front/user!login.do',
+    url: '/api/front/user/login.json',
     method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
@@ -84,7 +84,19 @@ const HTTP_URL_MAP = {
   },
   // 控制台-我的数据
   'getApiSubscibe': {
-    url: '/api/front/apiSubscibe/list.json',
+    url: '/api/front/apiSubscibe/listCallInfo.json',
+    method: REQUEST_METHOD_MAP.GET,
+    isList: false
+  },
+  // 控制台-数据看板1
+  'getInterfaceUsage': {
+    url: '/api/front/accountRecord/user.json',
+    method: REQUEST_METHOD_MAP.GET,
+    isList: false
+  },
+  // 控制台-数据看板2
+  'getHalfMonthIUsage': {
+    url: '/api/front/accountDaily/userReq15Days.json',
     method: REQUEST_METHOD_MAP.GET,
     isList: false
   },
@@ -122,12 +134,12 @@ const HTTP_URL_MAP = {
     method: REQUEST_METHOD_MAP.POST
   },
   'postPay': {
-    url: '/api/front/user/recharge.htm',
+    url: '/api/front/balance/recharge.json',
     method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
   'postEwm': {
-    url: '/api/front/user/rechargePrecreate.json',
+    url: '/api/front/balance/rechargePrecreate.json',
     method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
@@ -145,12 +157,12 @@ const HTTP_URL_MAP = {
     method: REQUEST_METHOD_MAP.POST,
     isList: false
   },
-  'getBalance': {
-    url: '/api/front/balance/sumRechargeByMonth.json',
+  'getBalanceTop': {
+    url: '/api/front/balance/userAmountInfo.json',
     isList: false
   },
   'getBalanceTabPay': {
-    url: '/api/front/balance/rechargeRrecord.json',
+    url: '/api/front/balance/paymentRecord.json',
     isList: true
   },
   'getBalanceTabCost': {
@@ -167,20 +179,37 @@ const HTTP_URL_MAP = {
     isList: false
   },
   'getNews': {
-    url: '/console/getNews',
-    isList: true
+    url: '/api/front/inMail/list.json',
+    isList: false
+  },
+  'postNews': {
+    url: '/api/front/inMail/get.json',
+    method: REQUEST_METHOD_MAP.POST,
+    isList: false
   },
   // 数据中心-数据详情
   'getDetail': {
-    url: '/console/getDetail',
+    url: '/api/front/accountDaily/getApiSummaryEndOfYesterday.json',
     isList: false
   },
   'getDetailChart': {
-    url: '/console/getDetailChart',
+    url: '/api/front/accountMonthly/getApiSixMonthSummary.json',
+    isList: false
+  },
+  'getDetailMonth': {
+    url: '/api/front/accountMonthly/getApiMonthlyListByPage.json',
+    isList: true
+  },
+  'getDetailDay': {
+    url: '/api/front/accountDaily/getApiDailyListByPage.json',
     isList: true
   },
   'getDetailTable': {
     url: '/console/getDetailTable',
+    isList: true
+  },
+  'getCarList': {
+    url: '/api/front/userCar/listByPage.json',
     isList: true
   },
   // 登录注册
@@ -209,7 +238,7 @@ const HTTP_URL_MAP = {
     isList: false
   },
   'logout': {
-    url: '/api/front/user!logout.do',
+    url: '/api/front/user/logout.json',
     method: REQUEST_METHOD_MAP.GET,
     isList: false
   },
@@ -222,8 +251,12 @@ const HTTP_URL_MAP = {
     url: '/api/front/me/modifyHeadImage.json',
     method: REQUEST_METHOD_MAP.POST,
     isList: false
+  },
+  'submitFile': {
+    url: '/api/front/userCar/importUserCar.json',
+    method: REQUEST_METHOD_MAP.POST,
+    isList: false
   }
-
 };
 
 let getUrlConfig = (action) => {

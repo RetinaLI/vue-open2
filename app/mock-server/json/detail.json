@@ -1,8 +1,8 @@
 {
   "data": {
-    "interfaceCount": 500,
-    "cost": 10000,
-    "yesCount": 200,
-    "yesCost": 3000
+    "totalmoneys": 500,
+    "yesterdayCount": 10000,
+    "yesterdayMoneys": 200,
+    "usercount": 3000
   }
 }

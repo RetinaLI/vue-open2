@@ -2,14 +2,14 @@
   <div class="wrapper">
     <h2 class="account-login">账号登录</h2>
     <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="form">
-      <el-form-item label="账号" prop="account" >
+      <el-form-item label="账号" prop="account">
         <el-input type="text" class="lucencyInput" v-model="ruleForm2.account" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
         <el-input type="password" v-model="ruleForm2.password" auto-complete="off"></el-input>
       </el-form-item>
       <el-form-item label="验证码" prop="checkCode">
-        <el-input v-model.number="ruleForm2.checkCode" class="check-code" ></el-input>
+        <el-input v-model.number="ruleForm2.checkCode" class="check-code"></el-input>
         <el-input class="check-pic"></el-input>
       </el-form-item>
       <el-form-item>
@@ -64,13 +64,13 @@ export default {
       },
       rules2: {
         account: [
-          { validator: account, trigger: 'blur' }
+          {validator: account, trigger: 'blur'}
         ],
         password: [
-          { validator: password, trigger: 'blur' }
+          {validator: password, trigger: 'blur'}
         ],
         checkCode: [
-          { validator: checkCode, trigger: 'blur' }
+          {validator: checkCode, trigger: 'blur'}
         ]
       }
     };
@@ -90,71 +90,71 @@ export default {
       this.$refs[formName].resetFields();
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  height: 326px;
-  width: 700px;
-  background: #eee;
-  box-shadow: 0px 4px 8px 0px rgba(68, 117, 253, 0.1);
-  margin: 162px auto 0;
-  .account-login {
-    height: 33px;
-    line-height: 33px;
-    border-bottom: 1px solid #eee;
-    text-align: center;
-    position: relative;
-    color: #4475fd;
-  }
-  .account-login::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 9px;
-    width: 4px;
-    height: 17px;
-    background: #4f91ff;
-    transform: translateX(-1200%);
-  }
+  .wrapper {
+    height: 326px;
+    width: 700px;
+    background: #eee;
+    box-shadow: 0px 4px 8px 0px rgba(68, 117, 253, 0.1);
+    margin: 162px auto 0;
+    .account-login {
+      height: 33px;
+      line-height: 33px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      position: relative;
+      color: #4475fd;
+    }
+    .account-login::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 9px;
+      width: 4px;
+      height: 17px;
+      background: #4f91ff;
+      transform: translateX(-1200%);
+    }
 
-  .form {
-    width: 500px;
-    margin: 0 auto;
-  }
-  /deep/ .el-input {
-    width: 68%;
-  }
+    .form {
+      width: 500px;
+      margin: 0 auto;
+    }
+    /deep/ .el-input {
+      width: 68%;
+    }
 
-  /deep/ .el-input__inner{
+    /deep/ .el-input__inner {
       border-radius: 20px;
-  }
+    }
 
-  /deep/ .el-form-item__error {
-    top: 11px;
-    left: 70%;
-  }
+    /deep/ .el-form-item__error {
+      top: 11px;
+      left: 70%;
+    }
 
-  /deep/ div.check-code{
-    width: 40%;
-  }
+    /deep/ div.check-code {
+      width: 40%;
+    }
 
-  /deep/ div.check-pic{
-    width:30%;
-    border:1px solid red;
-  }
+    /deep/ div.check-pic {
+      width: 30%;
+      border: 1px solid red;
+    }
 
-  /deep/ .check-code &.el-form-item__error{
-    left: 42%;
-  }
+    /deep/ .check-code &.el-form-item__error {
+      left: 42%;
+    }
 
-  .account {
-    width: 58%;
+    .account {
+      width: 58%;
+    }
+    .lucencyInput.el-form-item__error {
+      top: 11px;
+      left: 60%;
+    }
   }
- .lucencyInput.el-form-item__error {
-    top: 11px;
-    left: 60%;
-  }
-}
 </style>

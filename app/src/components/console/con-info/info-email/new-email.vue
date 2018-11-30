@@ -6,7 +6,7 @@
     ref="newEmailForm"
     label-width="100px"
     @click.prevent=""
-    class="con-form con-form-new">
+    class="con-form con-form-new newForm">
     <el-form-item
       prop="email"
       label="新邮箱 :"
@@ -25,8 +25,8 @@
       <span class="danger font12 code-info" v-show="getNewCode.disabled">验证码发送成功，请在 {{getTimes > 60 ? `${Math.floor(getTimes/60)}分钟` : `${getTimes}秒`}}内输入验证码</span>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitNewEmailForm" :disabled="submited" size="mini">绑定</el-button>
-      <el-button @click="cancelNewEmailForm" size="mini">取消</el-button>
+      <el-button type="primary" @click="submitNewEmailForm" :disabled="submited" class="save" size="mini">绑定</el-button>
+      <el-button @click="cancelNewEmailForm" class="cancle" size="mini">取消</el-button>
     </el-form-item>
   </el-form>
 </template>

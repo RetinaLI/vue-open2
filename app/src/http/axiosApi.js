@@ -43,7 +43,8 @@ let axiosApi = (action, data = {}) => {
       resData = typeof resData === 'string' ? JSON.parse(resData) : resData;
 
       // 对所有返回success+info的接口，转换成code+msg
-      if (Object.keys(resData).indexOf('success') !== -1 || Object.keys(resData).indexOf('type') !== -1) {
+      if (Object.keys(resData).indexOf('success') !== -1 ||
+        Object.keys(resData).indexOf('type') !== -1) {
         resData = Object.assign({}, resData, {
           code: resData.success || resData.type === 'success' ? 1 : 0,
           msg: resData.msg || resData.info || resData.content || ''
@@ -52,7 +53,9 @@ let axiosApi = (action, data = {}) => {
 
       // 支付接口
       resData = resData.apiResponse ? resData.apiResponse : resData;
-
+      if (resData.status) {
+        resData.data = {...resData};
+      }
       let {
         code = 1,
         data = 'undefined',
@@ -72,6 +75,7 @@ let axiosApi = (action, data = {}) => {
       } else {
         data = data || {};
       }
+
       // 返回的数据解构 -- 字段
       let resDatas = {
         code,
@@ -91,7 +95,9 @@ let axiosApi = (action, data = {}) => {
         data
       }).then(callbackFn).catch((error) => {
         callbackFn({
-          data: error
+          data: {
+            error
+          }
         });
       });
     }, delay);

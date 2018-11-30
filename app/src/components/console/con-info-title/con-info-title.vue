@@ -1,10 +1,10 @@
 <template>
   <p class="con-info-part-title">
     <span>{{title}}</span>
-    <span class="title-auth" :class="info[parseInt(showAuth.authStatus)]" v-if="showAuth.bool">{{auth[parseInt(showAuth.authStatus)]}}</span>
+    <span class="title-auth" :class="info[parseInt(showAuth.authStatus)]" v-if="showAuth.bool">{{auth[parseInt(showAuth.authStatus)]}}<i class="title-auth-info" v-if="showAuth.authStatus === '2' && showAuth.reason.length > 0">——&nbsp;&nbsp;{{showAuth.reason}}</i></span>
     <el-button
       v-if="isShow"
-      v-show="!Boolean(showAuth.authStatus === '0')"
+      v-show="!Boolean(showAuth.authStatus === '0' || showAuth.authStatus === '1')"
       type="text danger"
       class="con-info-change"
       @click="changeHandle()"
@@ -44,7 +44,8 @@ export default {
       default: () => {
         return {
           bool: false,
-          authStatus: '3'
+          authStatus: '3',
+          reason: ''
         };
       }
     },
@@ -104,6 +105,10 @@ export default {
       &.info {
         color: #409EFF;
       }
+    }
+    .title-auth-info {
+      font-size: 12px;
+      padding-left: 5px;
     }
     &:before {
       content: '';

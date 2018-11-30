@@ -16,7 +16,7 @@ module.exports = {
       success: true,
       info: '上传成功',
       fileBeans: [{
-        filename: 'lkjsdlkf.jpg',
+        fileName: 'lkjsdlkf.jpg',
         fileSize: '1231213',
         filePath: 'http://localhost:8081/public/img/identify.png',
         newFileName: 'kjsldkjgldsjflkdsjf.jpg'

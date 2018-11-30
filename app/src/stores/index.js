@@ -6,14 +6,14 @@ import * as types from './mutation-types';
 import info from './modules/info';
 import passport from './modules/passport';
 import { ProfileService } from '@/services/profile';
-import newsService from '@/services/news';
+import NewsService from '@/services/news';
 
 Vue.use(Vuex);
 
 // 开放环境:打印store
 const debug = process.env.NODE_ENV !== 'production';
 let profileService = new ProfileService();
-
+let newsService = new NewsService();
 export const STORE_MUTATION_MAP = {
   UPDATE_CURRENT_USER: 'UPDATE_CURRENT_USER',
   UPDATE_VALID_MENUS: 'UPDATE_VALID_MENUS',
@@ -25,9 +25,11 @@ export const STORE_MUTATION_MAP = {
 export const store = new Vuex.Store({
   state: {
     currentUser: {},
+    validMenus: [],
     news: { // 我的消息
       total: 0,
-      data: []
+      data: [],
+      isReadLen: 0
     }
   },
   getters: {
@@ -35,8 +37,7 @@ export const store = new Vuex.Store({
       return state.currentUser;
     },
     getNewsLength (state) { // 我的消息未读个数
-      let newArr = state.news.data.filter(ele => ele.news);
-      return newArr.length;
+      return state.news.isReadLen;
     },
     getNews (state) { // 我的消息数据
       return state.news;
@@ -74,8 +75,17 @@ export const store = new Vuex.Store({
     },
     // 我的消息state
     [types.NEWS] (state, news) {
-      state.news.total = news.totalCount;
-      state.news.data = news.data;
+      state.news.total = news.data.count || 0;
+      state.news.data = news.data.list;
+      state.news.isReadLen = news.data.noReadCount || 0;
+    },
+    [types.NEWS_IS_READ] (state, id) {
+      state.news.data.find(ele => {
+        if (ele.id === id) {
+          ele.isRead = 1;
+          state.news.isReadLen--;
+        }
+      });
     },
     [STORE_MUTATION_MAP.UPDATE_VALID_MENUS] (state, menus) {
       state.validMenus = menus;

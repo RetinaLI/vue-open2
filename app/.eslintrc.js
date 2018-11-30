@@ -5,6 +5,9 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint'
   },
+  globals: {
+    OpenApiApp: true
+  },
   env: {
     browser: true,
     jquery: true

@@ -16,10 +16,10 @@
           "sort": 2
         },
         "requestUrl": "https://www.baidu.com/asjfaldjf/sjdfa;sjdfal/aksdjf",
-        "status": 1,
+        "status": -1,
         "applyStatus": 1,
         "price": 0.01,
-        "monthlyCapPrice": 30,
+        "monthlyCapPrice": 10,
         "frequency": 199,
         "consumptionAmount": 1.99,
         "sort": 2
@@ -36,7 +36,7 @@
           "sort": 2
         },
         "requestUrl": "https://www.baidu.com/asjfaldjf/sjdfa;sjdfal/aksdjf",
-        "status": 1,
+        "status": 0,
         "applyStatus": 0,
         "price": 0.01,
         "monthlyCapPrice": 30,

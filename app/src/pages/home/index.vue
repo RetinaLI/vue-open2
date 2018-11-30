@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="index-page-body">
     <div class="banner">
       <div class="bg1">
         <img src="../../assets/images/home/bg1.png" alt="">
@@ -269,6 +269,9 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+.index-page-body {
+  background-color: #f7f7f8;
+}
 .banner {
   width: 100%;
   height: 720px;
@@ -335,6 +338,7 @@ export default {
     margin-left: 60px;
     box-shadow: 3px 6px 12px 0px rgba(241, 241, 241, 1);
     border: 1px solid rgba(239, 239, 239, 1);
+    background-color: #fff;
     .title {
       width: 320px;
       height: 300px;
@@ -381,7 +385,7 @@ export default {
   }
 }
 .data-getter {
-  height: 780px;
+  height: 720px;
   background: #0e0c2b url("../../assets/images/home/data-getter.jpg") center
     center no-repeat;
   .part-title {
@@ -416,10 +420,11 @@ export default {
   }
 }
 .data-share {
-  padding-top: 88px;
-  height: 876px;
+  padding-top: 50px;
+  height: 720px;
+  background-color: #fff;
   .clearfix {
-    margin-top: 80px;
+    margin-top: 40px;
     & > div {
       float: left;
     }
@@ -463,10 +468,15 @@ export default {
     flex-wrap: wrap;
     justify-content: space-between;
     .item {
-      flex: 1;
+      /* flex: 1;
+      *flex-basis: 200px; */
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: 200px;
       position: relative;
       margin-bottom: 35px;
       cursor: pointer;
+
       .no-grey {
         opacity: 0;
         position: absolute;

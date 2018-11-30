@@ -59,8 +59,8 @@ const ROUTES = [
         component: 'homeCarsBus'
       },
       {
-        path: 'solution/service/index.html',
-        name: 'solution-service',
+        path: 'solution/sell/index.html',
+        name: 'solution-sell',
         isStatic: true,
         component: 'solutionService'
       },
@@ -170,11 +170,12 @@ const ROUTES = [
     children: [
       {
         path: '',
-        redirect: 'data/index.html'
+        redirect: 'index.html'
       },
       {
         path: 'index.html',
-        redirect: 'data/index.html'
+        name: 'conIndex',
+        component: 'conIndex'
       },
       {
         path: 'data/index.html',
@@ -190,6 +191,11 @@ const ROUTES = [
         path: 'apply_list/index.html',
         name: 'conApply',
         component: 'conApplyList'
+      },
+      {
+        path: 'car_list/index.html',
+        name: 'conCar',
+        component: 'conCarList'
       },
       {
         path: 'info/index.html',

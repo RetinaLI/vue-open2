@@ -4,30 +4,30 @@
       <el-tabs v-model="tabModel" type="card" class="el-tabs" @tab-click="handleTypeClick">
         <el-tab-pane v-for="(item, i) in statusTypes" :key="i" :label="item.name" :name="item.name"></el-tab-pane>
       </el-tabs>
-      <div class="search">
-        <input type="text" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
+      <div class="search" ref="search">
+        <input type="text" @focus="getFocus" @blur="getBlur" class="ipt" v-model="keywords" @keyup.enter="handleSearch">
         <span class="el-icon-search vc" @click="handleSearch"></span>
       </div>
     </div>
-    <el-table stripe :data="tableData" class="my-table">
+    <el-table stripe :data="tableData" class="my-table" v-loading="loading">
       <el-table-column type="index" :width="WITH_LESS_2_WORDS" label="序号" align="center">
       </el-table-column>
       <el-table-column prop="apiType.name" :min-width="WITH_WITH_INDEFINITE_SUPER_LENGTH_TEXT" label="数据接口名称" align="left">
         <template slot-scope="scope">
-          <p>{{ scope.row.name }}</p>
+          <p><span class="api-type-status" :class="[(statusId === 1) ? apiIcon[scope.row.status + 1] : '']">{{ scope.row.name }}</span></p>
         </template>
       </el-table-column>
       <el-table-column prop="url" width="300" label="费用详情" align="left">
         <template slot-scope="scope">
-          <p>单次调用{{ scope.row.price }}元/每月上限{{ scope.row.limit }}元</p>
+          <p>单次调用{{ scope.row.price }}元/每月上限{{ scope.row.monthlyCapPrice }}元</p>
         </template>
       </el-table-column>
       <el-table-column :width="WITH_LESS_8_WORDS" align="center" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="statusId === 0" type="primary" :round="true" size="mini" class="el-button" disabled align="center">
+          <el-button v-if="scope.row.applyStatus === 0" type="primary" :round="true" size="mini" class="el-button" disabled align="center">
             审核中
           </el-button>
-          <el-button v-else-if="statusId === 1" type="primary" :round="true" size="mini" @click="handleTableCheckClick(scope.row)" class="el-button" align="center">
+          <el-button v-else-if="scope.row.applyStatus === 1" type="primary" :round="true" size="mini" @click="handleTableCheckClick(scope.row)" class="el-button" align="center">
             查看
           </el-button>
           <el-button v-else type="success" :round="true" size="mini" @click="handleApplyDataClick(scope.row, $event)" class="el-button" align="center">
@@ -52,9 +52,17 @@ import common from '@/lib/common.js';
 export default {
   name: 'ConData',
   created () {
-    let p = Number(this.$route.query.page);
-    if (p) {
-      this.pagination.curPage = p;
+    let { page, auditStats } = this.$route.query;
+    page = +page;
+    auditStats = +auditStats;
+    if (page) {
+      this.pagination.curPage = page;
+    }
+    if (auditStats === 0 || auditStats === 1 || auditStats === 2) {
+      this.statusId = auditStats;
+      this.tabModel = this.statusTypes.find(v => v.id === auditStats).name;
+    } else {
+      this.$router.push({path: '/console/apply_list/index.html'});
     }
     this.getData();
   },
@@ -62,6 +70,7 @@ export default {
     return {
       ...cellWidth,
       apiService: new ApiService(),
+      apiIcon: ['api02', 'api01', 'api03'],
       tabModel: '未申请',
       statusId: 2,
       statusTypes: [
@@ -86,15 +95,21 @@ export default {
         curPage: 1
       },
       tableData: [],
-      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作']
+      columns: ['数据接口名称', '接口地址', '调用单价（次/元）', '已调用次数', '已消费金额（元）', '操作'],
+      loading: true
     };
   },
   methods: {
+    getFocus () {
+      this.$refs.search.style.width = `200px`;
+    },
+    getBlur () {
+      this.$refs.search.style = ``;
+    },
     handleTableCheckClick (row) {
-      this.$router.push({ path: '/console/data/detail/index.html', query: { id: row.id } });
+      this.$router.push({ path: '/service/detail/index.html', query: { id: row.id } });
     },
     handleApplyDataClick (row, $e) {
-      let btn = $e.target.parentNode;
       let confirm = ToastTip.confirm({
         content: `您将购买数据接口“${row.name}”`
       });
@@ -102,9 +117,7 @@ export default {
         this.apiService.applyData({id: row.id}).then(res => {
           common.requestMsgHandler(res);
           if (res.code === 1) {
-            btn.disabled = 'disabled';
-            btn.className = 'el-button el-button el-button--primary el-button--mini is-disabled is-round';
-            btn.innerHTML = '<span>审核中</span>';
+            row.applyStatus = 0;
           }
         }).catch(() => { });
       }).catch(() => {});
@@ -114,11 +127,15 @@ export default {
         'apiTypeId': '',
         'pageSize': this.pagination.pageSize,
         'pageNum': this.pagination.curPage,
-        'name': this.enCodeURIKeywords,
+        'name': this.keywords,
         'auditStats': this.statusId
+      });
+      res.list.forEach(v => {
+        v.applyStatus = this.statusId;
       });
       this.tableData = res.list;
       this.pagination.totalCount = res.count || res.totalCount;
+      this.loading = false;
     },
     handleCurrentChange (val) {
       // 点击分页跳转
@@ -128,7 +145,7 @@ export default {
     },
     handleSearch () {
       if (this.pagination.curPage !== 1) this.pagination.curPage = 1;
-      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage + '&name=' + this.enCodeURIKeywords });
+      this.$router.push({ path: this.$route.path + '?page=' + this.pagination.curPage + '&name=' + this.keywords });
     },
     handleTypeClick (pane) {
       // 重置分类
@@ -145,11 +162,6 @@ export default {
       // this.getData();
     }
   },
-  computed: {
-    enCodeURIKeywords () {
-      return encodeURIComponent(this.keywords);
-    }
-  },
   watch: {
     '$route': 'getData'
   },
@@ -159,8 +171,41 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+  $api01: '~@/assets/images/console/api01.png';
+  $api02: '~@/assets/images/console/api02.png';
+  $api03: '~@/assets/images/console/api03.png';
 .none {
   display: none !important;
+}
+.api-type-status {
+  font-size: 14px;
+  &:after {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    width: 10px;
+    height: 10px;
+  }
+  &.api01 {
+    &:after {
+      background: url($api01) no-repeat;
+      background-size: 100% 100%;
+    }
+  }
+  &.api02 {
+    color: #999;
+    &:after {
+      background: url($api02) no-repeat;
+      background-size: 100% 100%;
+    }
+  }
+  &.api03 {
+    &:after {
+      background: url($api03) no-repeat;
+      background-size: 100% 100%;
+    }
+  }
 }
 .apply-list {
   min-width: 840px;
@@ -182,18 +227,20 @@ export default {
       right: 30px;
       width: 50px;
       transition: width 0.3s 0.3s;
+      border: 1px solid #aaa;
+      border-radius: 100px;
+      overflow: hidden;
       .ipt {
-        padding-left: 35px;
-        padding-right: 15px;
+        padding-left: 15px;
+        padding-right: 38px;
         width: 100%;
         height: 30px;
         line-height: 30px;
-        border: 1px solid #aaa;
-        border-radius: 100px;
       }
       .vc {
         width: 12px;
-        left: 17px;
+        left: auto;
+        right: 20px;
         z-index: 0;
         cursor: pointer;
       }

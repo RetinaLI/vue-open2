@@ -28,9 +28,9 @@ export default {
   data () {
     return {
       proBanner: {
-        'bgImg': require('project-assets/images/product/banner.jpg'),
-        'h3': '福田各类车型全系覆盖',
-        'p': '覆盖福田卡车、工程机械、新能源、客车、乘用车全系品牌，每日处理车辆数据20亿+条'
+        bgImg: require('project-assets/images/product/banner.jpg'),
+        title: '福田各类车型全系覆盖',
+        text: '覆盖福田卡车、工程机械、新能源、客车、乘用车全系品牌，每日处理车辆数据20亿+条'
       },
       pros: [
         {
@@ -133,6 +133,7 @@ export default {
           opacity: 0;
           padding: 15px;
           transition: opacity 0.5s;
+          border: 0;
           i {
             color: #4475fd;
           }

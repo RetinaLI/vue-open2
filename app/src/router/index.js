@@ -4,9 +4,7 @@ import * as views from '@/views/index';
 import ROUTES from './config';
 import { ProfileService } from '@/services/profile';
 import { PassportService } from '@/services/passport';
-
 // components引入 写在views/index 内
-
 Vue.use(Router);
 
 // 初始化滚动轴位置
@@ -31,7 +29,6 @@ let renderRoutes = (rs = []) => {
 
 renderRoutes(ROUTES);
 
-// 定义路由
 const routes = ROUTES;
 
 const router = new Router({

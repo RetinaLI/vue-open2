@@ -23,6 +23,7 @@
               </div>
               <p v-else>暂无</p>
             </el-form-item>
+            <el-form-item label="用户类型 :">{{ruleForm.resource || '暂无'}}</el-form-item>
             <el-form-item label="联系人 :">{{ruleForm.uname || '暂无'}}</el-form-item>
             <el-form-item label="联系电话 :">{{ruleForm.tel || '暂无'}}</el-form-item>
           </el-form>
@@ -52,8 +53,14 @@
                 <img v-if="ruleForm.photo" :src="ruleForm.photo" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
-              <p class="con-auth-photo-info">请教企业营业执照的扫描文件或复印件，需要加盖双章（红色企业公章+自带右下角签发机关章）。<br/>需确保图片清晰可见。图片格式支持png、bmp、jpeg、jpg，大小不超过20MB
+              <p class="con-auth-photo-info">请教企业营业执照的扫描文件或复印件，需要加盖双章（红色企业公章+自带右下角签发机关章）。<br/>需确保图片清晰可见。图片支持JPG/PNG格式，大小不超过20MB
               </p>
+            </el-form-item>
+            <el-form-item label="用户类型" prop="resource">
+              <el-radio-group v-model="ruleForm.resource">
+                <el-radio :label="radioText[0].text"></el-radio>
+                <el-radio :label="radioText[1].text"></el-radio>
+              </el-radio-group>
             </el-form-item>
             <el-form-item label="联系人">
               <el-input v-model="ruleForm.uname"></el-input>
@@ -62,7 +69,7 @@
               <el-input v-model="ruleForm.tel"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitForm('ruleForm')" size="small">确认修改</el-button>
+              <el-button type="primary ok" @click="submitForm('ruleForm')" size="small">确认修改</el-button>
               <el-button @click="cancelForm('ruleForm')" size="small">取消</el-button>
             </el-form-item>
           </el-form>
@@ -74,7 +81,7 @@
 
 <script>
 import ToastTip from '@/lib/message';
-import authService from '@/services/auth';
+import AuthService from '@/services/auth';
 import ConTitle from '@/components/console/con-info-title/con-info-title';
 import { getUrlConfig } from '@/http/http.url.config';
 import ValidateFactory from '@/lib/validate';
@@ -87,6 +94,15 @@ export default {
   data () {
     return {
       title: ['认证信息'],
+      radioText: [
+        {
+          text: '非合同用户',
+          type: 0
+        }, {
+          text: '合同用户（线下签订）',
+          type: 1
+        }
+      ],
       fileUploadUrl: getUrlConfig('postImg').url,
       fileUploadData: {
         moduleId: 'api'
@@ -101,22 +117,28 @@ export default {
         regNum: '',
         photo: '',
         uname: '',
-        tel: ''
+        tel: '',
+        resource: ''
       },
       rules: {
         name: [
           {required: true, message: '请输入企业名称', trigger: 'blur'}
         ],
         regNum: [
+          {required: true, message: '请输入统一社会信用代码/营业执照注册号', trigger: 'blur'},
           {validator: ValidateFactory.NumAndWord, trigger: 'blur'}
         ],
         photo: [
           {required: true, message: '请上传营业执照影印件', trigger: 'blur'}
+        ],
+        resource: [
+          {required: true, message: '请选择用户类型', trigger: 'blur'}
         ]
       },
       showAuth: {
         bool: true,
-        authStatus: '3'
+        authStatus: '3',
+        reason: ''
       },
       file: ''
     };
@@ -139,15 +161,18 @@ export default {
             this.ruleForm.regNum === this.old.uscc &&
             this.ruleForm.photo === this.old.businessLicense &&
             this.ruleForm.uname === this.old.operator &&
-            this.ruleForm.tel === this.old.mobile) {
+            this.ruleForm.tel === this.old.mobile &&
+            this.ruleForm.resource === this.old.resource) {
             this.cancelForm(formName);
           } else {
-            let {code = 0, message = ''} = await authService.postAuth({
+            let type = this.radioText.filter(ele => ele.text === this.ruleForm.resource);
+            let {code = 0, message = ''} = await AuthService.postAuth({
               enterprise: this.ruleForm.name,
               uscc: this.ruleForm.regNum.toLocaleUpperCase(),
               businessLicense: this.ruleForm.photo,
               operator: this.ruleForm.uname,
-              mobile: this.ruleForm.tel
+              mobile: this.ruleForm.tel,
+              payType: type[0].type
             });
             // let data = await this.uploadImg();
             if (code === 1) {
@@ -160,6 +185,7 @@ export default {
               }
               this.old.operator = this.ruleForm.uname;
               this.old.mobile = this.ruleForm.tel;
+              this.old.resource = this.ruleForm.resource;
               this.changeInfo.changed = false;
               this.changeInfo.title = '修改';
             } else {
@@ -178,6 +204,11 @@ export default {
       this.ruleForm.photo = this.old.businessLicense;
       this.ruleForm.uname = this.old.operator;
       this.ruleForm.tel = this.old.mobile;
+      if (this.old.payType === 0 || this.old.payType === 1) {
+        this.ruleForm.resource = this.radioText[this.old.payType].text;
+      } else {
+        this.ruleForm.resource = '';
+      }
       if (formName === 'ruleForm') {
         this.changeInfo.changed = false;
         this.changeInfo.title = '修改';
@@ -221,13 +252,19 @@ export default {
       return isJPG && isLt2M;
     },
     async getAuth () {
-      this.old = await authService.getAuth();
+      this.old = await AuthService.getAuth();
       this.ruleForm.name = this.old.enterprise || '';
       this.ruleForm.regNum = this.old.uscc || '';
       this.ruleForm.photo = this.old.businessLicense || '';
       this.ruleForm.uname = this.old.operator || '';
       this.ruleForm.tel = this.old.mobile || '';
+      if (this.old.payType === 0 || this.old.payType === 1) {
+        this.ruleForm.resource = this.radioText[this.old.payType].text;
+      } else {
+        this.ruleForm.resource = '';
+      }
       this.showAuth.authStatus = this.old.authStatus + '' || '3';
+      this.showAuth.reason = this.old.reason || '';
     }
   },
   mounted: function () {
@@ -285,5 +322,10 @@ export default {
 
   .el-input {
     width: 300px;
+  }
+
+  .ok {
+    background-color: #4475FD;
+    border-color: #4475FD;
   }
 </style>

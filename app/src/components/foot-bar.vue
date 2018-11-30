@@ -8,7 +8,7 @@
           <h5>快速入口</h5>
           <p><router-link to="/service/index.html">数据服务</router-link></p>
           <p><router-link to="/dynamic/industry/index.html">产品&amp;行业动态</router-link></p>
-          <!-- <p>联系我们</p> -->
+          <p><a href="/static/api_v1.0.docx">数据接口文档（内部）</a></p>
         </div>
         <div class="item">
           <h5>车联网产品</h5>
@@ -23,7 +23,7 @@
           <p><router-link to="/solution/manage/index.html">车队管理系统</router-link></p>
           <p><router-link to="/solution/finance/index.html">金融车联网系统</router-link></p>
           <p><router-link to="/solution/logistic/index.html">物流车联网系统</router-link></p>
-          <p><router-link to="/solution/service/index.html">经销/服务商车联网系统</router-link></p>
+          <p><router-link to="/solution/sell/index.html">经销/服务商车联网系统</router-link></p>
         </div>
         <div class="item">
           <h5>关注智科</h5>
@@ -57,15 +57,7 @@
 </template>
 <script>
 export default {
-  name: 'foot-bar',
-  data () {
-    return {
-    };
-  },
-  computed: {
-  },
-  methods: {
-  }
+  name: 'foot-bar'
 };
 </script>
 <style lang="scss" scoped>
@@ -77,14 +69,22 @@ export default {
     padding-top: 80px;
     position: relative;
     .content {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
       .item {
-        float: left;
         h5 {
           color: rgba(255, 255, 255, .9);
           font-size: 14px;
           margin-bottom: 26px;
         }
-        p, p a {
+        p {
+          color: rgba(255, 255, 255, .4);
+          font-size: 12px;
+          line-height: 18px;
+          margin-bottom: 10px;
+        }
+        p a {
           color: rgba(255, 255, 255, .4);
           font-size: 12px;
           line-height: 18px;

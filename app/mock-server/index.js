@@ -34,7 +34,7 @@ router.get(URL_PREFIXERS + '/test', (req, res) => {
 });
 
 router.get(URL_PREFIXERS + '/api/front/me/userInfo.json', (req, res) => {
-  res.status(404).send(ControllerMap.profile.getCurrentUser());
+  res.status(200).send(ControllerMap.profile.getCurrentUser());
 });
 
 router.get(URL_PREFIXERS + '/profile/menus', (req, res) => {
@@ -45,7 +45,7 @@ router.get(URL_PREFIXERS + '/profile/list', (req, res) => {
   res.status(200).send(ControllerMap.profile.getApiList());
 });
 
-router.post(URL_PREFIXERS + '/api/front/user!login.do', (req, res) => {
+router.post(URL_PREFIXERS + '/api/front/user/login.json', (req, res) => {
   res.status(200).send(ControllerMap.passport.login());
 });
 // 行业&产品动态
@@ -65,7 +65,7 @@ router.get(URL_PREFIXERS + '/nosecurity/api/front/apiInfo/list.json',
     res.status(200).send(ControllerMap.profile.getInterfaces());
   });
 // 控制台-我的数据
-router.get(URL_PREFIXERS + '/api/front/apiSubscibe/list.json', (req, res) => {
+router.get(URL_PREFIXERS + '/api/front/apiSubscibe/listCallInfo.json', (req, res) => {
   res.status(200).send(ControllerMap.profile.getApiSubscibe());
 });
 
@@ -88,16 +88,24 @@ router.get(URL_PREFIXERS + '/api/front/apiSubscibe/applyData.json',
   });
 
 // 控制台-个人中心
-router.get(URL_PREFIXERS + '/api/front/balance/sumRechargeByMonth.json',
+router.get(URL_PREFIXERS + '/api/front/balance/userAmountInfo.json',
   (req, res) => {
     res.status(200).send(ControllerMap.balance.getBalanceTop());
   });
+// 控制台-数据看板
+router.get(URL_PREFIXERS + '/api/front/accountRecord/user.json', (req, res) => {
+  res.status(200).send(ControllerMap.balance.getInterfaceUsage());
+});
+
+router.get(URL_PREFIXERS + '/api/front/accountDaily/userReq15Days.json', (req, res) => {
+  res.status(200).send(ControllerMap.balance.getHalfMonthIUsage());
+});
 // 控制台-申请数据
 router.get(URL_PREFIXERS + '/api/front/apiInfo/listAudit.json', (req, res) => {
   res.status(200).send(ControllerMap.profile.getInterfaces());
 });
 
-router.get(URL_PREFIXERS + '/api/front/balance/rechargeRrecord.json',
+router.get(URL_PREFIXERS + '/api/front/balance/paymentRecord.json',
   (req, res) => {
     res.status(200).send(ControllerMap.balance.getBalanceTabPay());
   });
@@ -173,7 +181,7 @@ router.post(URL_PREFIXERS + '/api/front/auth/save.json', (req, res) => {
   res.status(200).send(ControllerMap.auth.postAuth());
 });
 
-router.post(URL_PREFIXERS + '/api/front/user/rechargePrecreate.json', (req, res) => {
+router.post(URL_PREFIXERS + '/api/front/balance/rechargePrecreate.json', (req, res) => {
   res.status(200).send(ControllerMap.pay.postEwm());
 });
 
@@ -189,23 +197,35 @@ router.get(URL_PREFIXERS + '/pay/scanPayPrecreate.json', (req, res) => {
   res.status(200).send(ControllerMap.pay.getEwmUrl());
 });
 
-router.post(URL_PREFIXERS + '/api/front/user/recharge.htm', (req, res) => {
+router.post(URL_PREFIXERS + '/api/front/balance/recharge.json', (req, res) => {
   res.status(200).send(ControllerMap.pay.postPay());
 });
-router.get(URL_PREFIXERS + '/console/getNews', (req, res) => {
+router.get(URL_PREFIXERS + '/api/front/inMail/list.json', (req, res) => {
   res.status(200).send(ControllerMap.news.getNews());
 });
-
-router.get(URL_PREFIXERS + '/console/getDetail', (req, res) => {
+router.post(URL_PREFIXERS + '/api/front/inMail/get.json', (req, res) => {
+  res.status(200).send(ControllerMap.news.postNews());
+});
+router.get(URL_PREFIXERS + '/api/front/accountDaily/getApiSummaryEndOfYesterday.json', (req, res) => {
   res.status(200).send(ControllerMap.detail.getDetail());
 });
 
-router.get(URL_PREFIXERS + '/console/getDetailChart', (req, res) => {
+router.get(URL_PREFIXERS + '/api/front/accountMonthly/getApiSixMonthSummary.json', (req, res) => {
   res.status(200).send(ControllerMap.detail.getDetailChart());
+});
+router.get(URL_PREFIXERS + '/api/front/accountMonthly/getApiMonthlyListByPage.json', (req, res) => {
+  res.status(200).send(ControllerMap.detail.getDetailMonth());
+});
+router.get(URL_PREFIXERS + '/api/front/accountDaily/getApiDailyListByPage.json', (req, res) => {
+  res.status(200).send(ControllerMap.detail.getDetailDay());
 });
 
 router.get(URL_PREFIXERS + '/console/getDetailTable', (req, res) => {
   res.status(200).send(ControllerMap.detail.getDetailTable());
+});
+
+router.get(URL_PREFIXERS + '/api/front/userCar/listByPage.json', (req, res) => {
+  res.status(200).send(ControllerMap.detail.getCarList());
 });
 
 router.get(URL_PREFIXERS + '/captcha.pic', (req, res) => {
@@ -228,7 +248,7 @@ router.post(URL_PREFIXERS + '/nosecurity/api/front/verification/sendEmailCode.js
   res.status(200).send(ControllerMap.passport.resendCode());
 });
 
-router.get(URL_PREFIXERS + '/api/front/user!logout.do', (req, res) => {
+router.get(URL_PREFIXERS + '/api/front/user/logout.json', (req, res) => {
   res.status(200).send(ControllerMap.passport.logout());
 });
 
@@ -238,6 +258,10 @@ router.post(URL_PREFIXERS + '/api/front/user/checkRegisterInfo.json', (req, res)
 
 router.post(URL_PREFIXERS + '/api/front/me/modifyHeadImage.json', (req, res) => {
   res.status(200).send(ControllerMap.info.modifyAvatar());
+});
+
+router.post(URL_PREFIXERS + '/api/front/userCar/importUserCar.json', (req, res) => {
+  res.status(200).send(ControllerMap.detail.submitFile());
 });
 app.use(router);
 app.listen(port, () => {

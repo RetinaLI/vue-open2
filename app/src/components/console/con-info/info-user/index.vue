@@ -1,41 +1,51 @@
 <template>
-  <el-form
-    :model="infoForm"
-    :rules="rules"
-    ref="infoForm"
-    label-width="100px"
-    class="con-form">
-    <el-form-item label="头像 :" class="con-upload-icon">
-      <div class="con-user-icon">
-        <img v-if="infoForm.userIcon" :src="infoForm.userIcon" class="avatar">
-      </div>
-      <el-upload
-        v-show="changeInfo.changed"
-        class="avatar-uploader"
-        :action="fileUploadUrl"
-        :data="fileUploadData"
-        multiple
-        name="fileData"
-        :show-file-list="false"
-        :before-upload="beforeAvatarUpload"
-        :on-success="onFileUploadSuccess">
-        <i class="el-icon-plus avatar-uploader-icon"></i>
-      </el-upload>
-      <p class="danger font12 file-info" v-show="changeInfo.changed">上传文件类型:png/jpg/gif,大小不超过2M</p>
-    </el-form-item>
-    <el-form-item label="昵称 :" prop="username">
-      <span class="con-email" v-show="!changeInfo.changed">{{infoForm.username || '暂无'}}</span>
-      <el-input
-        type="text"
-        v-show="changeInfo.changed"
-        v-model="infoForm.username"
-      ></el-input>
-    </el-form-item>
-    <el-form-item v-show="changeInfo.changed">
-      <el-button type="primary" @click="submitInfoForm('infoForm', 'changeInfo')" size="mini">保存</el-button>
-      <el-button @click="cancelInfoForm('infoForm', 'changeInfo')" size="mini">取消</el-button>
-    </el-form-item>
-  </el-form>
+  <div>
+    <el-form label-width="100px" class="con-form view-wrapper" v-show="!changeInfo.changed">
+      <el-form-item label="头像 :" class="con-upload-icon">
+        <div class="con-user-icon">
+          <img :src="getCurrentUser.headImageUrl || iconPng" class="avatar">
+        </div>
+      </el-form-item>
+      <el-form-item label="昵称 :" prop="username">
+        <span class="con-name">{{getCurrentUser.name || '暂无'}}</span>
+      </el-form-item>
+    </el-form>
+    <el-form
+      :model="infoForm"
+      :rules="rules"
+      ref="infoForm"
+      label-width="100px"
+      v-show="changeInfo.changed"
+      class="con-form edit-wrapper">
+      <el-form-item label="头像 :" class="con-upload-icon">
+        <div class="con-user-icon">
+          <img v-if="infoForm.userIcon" :src="infoForm.userIcon" class="avatar">
+        </div>
+        <el-upload
+          class="avatar-uploader"
+          :action="fileUploadUrl"
+          :data="fileUploadData"
+          multiple
+          name="fileData"
+          :show-file-list="false"
+          :before-upload="beforeAvatarUpload"
+          :on-success="onFileUploadSuccess">
+          <i class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+        <p class="danger font12 file-info" v-show="changeInfo.changed">上传文件类型:png/jpg/gif,大小不超过2M</p>
+      </el-form-item>
+      <el-form-item class="edit-input" label="昵称 :" prop="username">
+        <el-input
+          type="text"
+          v-model="infoForm.username"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button class="save" type="primary" @click="submitInfoForm('infoForm', 'changeInfo')" size="mini">保存</el-button>
+        <el-button class="cancel" @click="cancelInfoForm('infoForm', 'changeInfo')" size="mini">取消</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
 
 <script>
@@ -45,7 +55,7 @@ import ValidateFactory from '@/lib/validate';
 import ToastTip from '@/lib/message';
 import Common from '@/lib/common';
 import { getUrlConfig } from '@/http/http.url.config';
-import infoService from '@/services/info';
+import InfoService from '@/services/info';
 
 export default {
   name: 'Index',
@@ -64,6 +74,7 @@ export default {
           {validator: ValidateFactory.nickName, trigger: 'blur'}
         ]
       },
+      iconPng,
       file: ''
     };
   },
@@ -84,8 +95,12 @@ export default {
     ])
   },
   methods: {
+    infoFormValue () {
+      this.infoForm.username = this.getCurrentUser.name || '暂无';
+      this.infoForm.userIcon = this.getCurrentUser.headImageUrl || iconPng;
+    },
     async changeName () {
-      let res = await infoService.postName({
+      let res = await InfoService.postName({
         name: this.infoForm.username
       });
       Common.requestMsgHandler(res);
@@ -96,7 +111,7 @@ export default {
     },
     async changeAvatar () {
       if (this.file) {
-        let res = await infoService.modifyAvatar({
+        let res = await InfoService.modifyAvatar({
           headImageUrl: this.file[0].filePath
         });
         if (res.code === 1) {
@@ -149,15 +164,16 @@ export default {
         ToastTip.error('上传头像图片大小不能超过 2MB!');
       }
       return isJPG && isLt2M;
-    },
-    getInfo () {
-      let {name = '', headImageUrl = ''} = this.getCurrentUser;
-      this.infoForm.userIcon = headImageUrl || iconPng;
-      this.infoForm.username = name;
+      // },
+      // getInfo () {
+      //   console.log('--获取头像--');
+      // let {name = '', headImageUrl = iconPng} = this.getCurrentUser;
+      // this.infoForm.userIcon = headImageUrl;
+      // this.infoForm.username = name;
     }
   },
   mounted: function () {
-    this.getInfo();
+    // this.getInfo();
   }
 };
 </script>

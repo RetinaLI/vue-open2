@@ -4,15 +4,11 @@ let passportService = new PassportService();
 
 export default class ValidateFactory {
   static NumAndWord (rule, value, callback) {
-    if (value === '') {
-      callback(new Error('*请输入统一社会信用代码/营业执照注册号'));
+    let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{18}$/;
+    if (!reg.test(value)) {
+      callback(new Error('请输入18位字母和数字组合'));
     } else {
-      let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{18}$/;
-      if (!reg.test(value)) {
-        callback(new Error('请输入18位字母和数字组合'));
-      } else {
-        callback();
-      }
+      callback();
     }
   }
 

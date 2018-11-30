@@ -5,76 +5,112 @@
     "count": 20,
     "list": [
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "createdDate": "2018-2-2 00:00:00",
+        "created": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-1 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-1-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "totalCount": 20
       },
       {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
-      },
-      {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
-      },
-      {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
-      },
-      {
-        "count": 12,
-        "cost": 4343,
-        "way": "支付宝",
-        "date": "2018-2-2"
+        "id": 0,
+        "status": "支付成功",
+        "orderId": 12,
+        "money": 4343,
+        "payWayType": "ALIPAY",
+        "created": "2018-2-2 00:00:00",
+        "apiCount": 2,
+        "createdDate": "2018-2-2 00:00:00",
+        "tradeTime": "2018-2-2 00:00:00",
+        "totalCount": 20
       }
     ]
   }

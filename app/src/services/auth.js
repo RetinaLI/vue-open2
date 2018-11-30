@@ -1,20 +1,18 @@
 import axiosApi from '@/http/axiosApi';
 
 class AuthService {
-  async getAuth () {
+  static async getAuth () {
     let {data} = await axiosApi('getAuth');
     return data;
   }
-  async postAuth (info) {
+  static async postAuth (info) {
     let data = await axiosApi('postAuth', info);
     return data;
   }
-  async postImg (formData) {
+  static async postImg (formData) {
     let data = await axiosApi('postAuthImg', formData);
     return data;
   }
 }
 
-let authService = new AuthService();
-
-export default authService;
+export default AuthService;

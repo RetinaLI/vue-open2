@@ -1,0 +1,57 @@
+{
+  "data": {
+    "count": 20,
+    "list": [
+      {
+        "userCarId": 0,
+        "userId": 33,
+        "carInfoId": 3234,
+        "userName": "ccdd",
+        "carInfoName": null,
+        "vin": "LVCB324324324324324",
+        "lpn": null,
+        "status": -2,
+        "auditor": "jack",
+        "auditTime": "2018-09-15 09:20:29"
+      },
+      {
+        "userCarId": 0,
+        "userId": 33,
+        "carInfoId": 3234,
+        "userName": "ccdd",
+        "carInfoName": null,
+        "vin": "LVCB324324324324324",
+        "lpn": "京A23233",
+        "status": -1,
+        "auditor": "jack",
+        "auditTime": null
+      },
+      {
+        "userCarId": 0,
+        "userId": 33,
+        "carInfoId": 3234,
+        "userName": "ccdd",
+        "carInfoName": null,
+        "vin": "LVCB324324324324324",
+        "lpn": "京A23233",
+        "status": 0,
+        "auditor": "jack",
+        "auditTime": "2018-09-15 09:20:29"
+      },
+      {
+        "userCarId": 0,
+        "userId": 33,
+        "carInfoId": 3234,
+        "userName": "ccdd",
+        "carInfoName": null,
+        "vin": "LVCB324324324324324",
+        "lpn": "京A23233",
+        "status": 1,
+        "auditor": "jack",
+        "auditTime": "2018-09-15 09:20:29"
+      }
+    ]
+  },
+  "code": 1,
+  "msg": "获取数据列表成功"
+}

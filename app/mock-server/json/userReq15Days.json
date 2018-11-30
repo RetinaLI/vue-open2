@@ -1,0 +1,96 @@
+{
+  "data": [
+    {
+      "usercount": 10,
+      "allmoney": 1.11,
+      "apinum": 2,
+      "time": "2018-09-11"
+    },
+    {
+      "usercount": 20,
+      "allmoney": 15.6,
+      "apinum": 2,
+      "time": "2018-09-12"
+    },
+    {
+      "usercount": 30,
+      "allmoney": 3.76,
+      "apinum": 2,
+      "time": "2018-09-13"
+    },
+    {
+      "usercount": 40,
+      "allmoney": 1.11,
+      "apinum": 2,
+      "time": "2018-09-14"
+    },
+    {
+      "usercount": 50,
+      "allmoney": 15.6,
+      "apinum": 2,
+      "time": "2018-09-15"
+    },
+    {
+      "usercount": 60,
+      "allmoney": 3.76,
+      "apinum": 2,
+      "time": "2018-09-16"
+    },
+    {
+      "usercount": 70,
+      "allmoney": 1.11,
+      "apinum": 2,
+      "time": "2018-09-17"
+    },
+    {
+      "usercount": 80,
+      "allmoney": 15.6,
+      "apinum": 2,
+      "time": "2018-09-18"
+    },
+    {
+      "usercount": 90,
+      "allmoney": 3.76,
+      "apinum": 2,
+      "time": "2018-09-19"
+    },
+    {
+      "usercount": 100,
+      "allmoney": 1.11,
+      "apinum": 2,
+      "time": "2018-09-20"
+    },
+    {
+      "usercount": 110,
+      "allmoney": 15.6,
+      "apinum": 2,
+      "time": "2018-09-21"
+    },
+    {
+      "usercount": 120,
+      "allmoney": 3.76,
+      "apinum": 2,
+      "time": "2018-09-22"
+    },
+    {
+      "usercount": 300,
+      "allmoney": 1.11,
+      "apinum": 2,
+      "time": "2018-09-23"
+    },
+    {
+      "usercount": 140,
+      "allmoney": 15.6,
+      "apinum": 2,
+      "time": "2018-09-24"
+    },
+    {
+      "usercount": 150,
+      "allmoney": 3.76,
+      "apinum": 2,
+      "time": "2018-09-25"
+    }
+  ],
+  "code": 1,
+  "msg": "成功"
+}
